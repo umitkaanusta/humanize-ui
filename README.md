@@ -6,10 +6,11 @@ components.
 > **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
 > usage** while building humanize-ui.
 
-![Before and after humanize-ui, same prompt](examples/spoke-and-spanner/hero-before-after.png)
+![Before and after humanize-ui, same prompt](examples/beaconops/hero-before-after.png)
 
-For full page and prompts: 
-[examples/spoke-and-spanner](examples/spoke-and-spanner)
+For full page and prompts:
+
+- [BeaconOps, fictional incident monitoring software](examples/beaconops)
 
 ## How it works
 
