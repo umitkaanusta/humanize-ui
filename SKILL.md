@@ -10,10 +10,16 @@ description:
 Use this skill when improving or building frontend UI where the result
 should feel more polished than a generic AI-generated interface.
 
-The operating model is: inspect the product first, scout strong
-human-designed references second, then adapt the best-fitting pieces
-into the existing frontend foundation. Treat component libraries like
-LEGO, not like a theme you paste over the app.
+The operating model is: inspect the product first, make deliberate
+project-specific design choices second, scout strong human-designed
+references third, then adapt the best-fitting pieces into the existing
+frontend foundation. Treat component libraries like LEGO, not like a
+theme you paste over the app.
+
+The skill should feel seamless in use. Do not stop the task to ask for
+design direction unless the missing choice would materially change the
+result. When the brief is underspecified, state the concrete decisions
+you are making and proceed.
 
 ## Workflow
 
@@ -36,7 +42,33 @@ LEGO, not like a theme you paste over the app.
      alignment, affordance, state handling, motion, copy, or mobile
      behavior.
 
-3. Scout curated sources when references would improve the result.
+3. Establish a project-specific design direction.
+   - Make four explicit choices before generating UI: reference
+     direction, color decision, type decision, and layout intent.
+   - If the product already has brand or design tokens, use those
+     choices. If it does not, choose a specific direction that fits the
+     brief and say it plainly: utilitarian operational tool,
+     editorial commerce, dense technical console, local service shop,
+     consumer wellness app, and so on. Avoid empty directions like
+     "modern and clean."
+   - The layout should come from the user's real workflow, not from a
+     default page skeleton. For example, incident software should
+     foreground alert routing, service ownership, timelines, status
+     updates, or monitoring context; a local repair shop should
+     foreground booking, service menu, location, turnaround, and trust.
+
+4. Use a small visual vocabulary.
+   - Pick one or two strong visual motifs and execute them consistently
+     instead of stacking half-ideas.
+   - Be deliberate about color, type, radius, borders, elevation,
+     iconography, illustration, data display, and motion. Avoid adding
+     gradients, glow, cards, blobs, glass, shadows, and animations just
+     because they are available.
+   - Do not replace one default look with another. Swapping AI-purple
+     gradients for warm cream, sage green, and a refined serif is still
+     a default if the project did not ask for it.
+
+5. Scout curated sources when references would improve the result.
    - Search or browse the relevant source sites for current
      components, code, and behavior. Prefer the actual implementation
      over imitating a screenshot.
@@ -45,7 +77,7 @@ LEGO, not like a theme you paste over the app.
    - If a source exposes install commands or registry items, inspect
      what it adds before integrating it.
 
-4. Evaluate candidates before using one.
+6. Evaluate candidates before using one.
    - Consider visual fit, UX fit, stack compatibility, dependency
      cost, accessibility, responsive behavior, implementation
      complexity, maintainability, and how easily the component can be
@@ -55,7 +87,7 @@ LEGO, not like a theme you paste over the app.
    - Reject components whose personality, motion, density, or
      dependency footprint would make the product feel inconsistent.
 
-5. Adapt the selected pattern into the existing design language.
+7. Adapt the selected pattern into the existing design language.
    - Match local typography, spacing, colors, radius, shadows,
      iconography, state management, component APIs, and accessibility
      patterns.
@@ -65,10 +97,19 @@ LEGO, not like a theme you paste over the app.
    - The result should look native to the project, not transplanted
      from another library.
 
-6. Polish and verify.
+8. Polish and verify.
    - Check hierarchy, spacing, density, alignment, hover/focus/active
      states, keyboard behavior, reduced-motion behavior, mobile
      layout, empty/loading/error states, and accessibility.
+   - Audit for AI-built visual tells before finishing: untouched
+     shadcn or Tailwind defaults, purple or blue gradient defaults,
+     gradient hero text, unprompted neon glow, emoji-as-icons,
+     excessive pill rounding, generic Inter or Geist by reflex,
+     cream-plus-serif-plus-sage by reflex, and the centered hero plus
+     three-card feature layout.
+   - A flagged choice is acceptable when it is clearly intentional for
+     the product. The problem is the unspecified default, not the color,
+     typeface, framework, or component by itself.
    - Preserve existing functionality unless the user explicitly asks
      for behavior changes.
    - Improve the smallest appropriate surface area.
@@ -107,6 +148,8 @@ the task, and keep any new suggestions rare and high-quality.
 - Reference first, adapt second, invent only where necessary.
 - Do not blindly copy a component just because it looks good in
   isolation.
+- Make specific choices before styling. The work should look like it
+  belongs to this product, this audience, and this workflow.
 - Do not create a Frankenstein UI assembled from mismatched libraries,
   clashing radii, incompatible shadows, random gradients, inconsistent
   motion, or competing interaction models.
@@ -114,6 +157,14 @@ the task, and keep any new suggestions rare and high-quality.
   the product: oversized cards, gratuitous gradients, glassmorphism,
   decorative blobs, excessive rounding, dramatic shadows, and motion
   for its own sake.
+- Avoid the newer tasteful default too: warm cream backgrounds, sage or
+  forest accents, refined serif display type, and soft editorial cards
+  are not automatically more human. Use them only when they match the
+  product's actual direction.
+- When a required page shape includes common sections such as hero,
+  benefits, pricing, and CTA, vary the composition around the domain's
+  workflow so it does not collapse into the same centered hero and
+  three-card template.
 - Favor coherence over flair. A quiet, well-integrated component is
   usually better than a flashy imported one.
 - Respect licenses, provenance, and attribution requirements for
