@@ -1,7 +1,7 @@
 # Humanize-UI
 
-Give your coding agent some design taste. Humanize your UI with proven,
-human-designed components instead of starting from scratch.
+Give your coding agent some design taste. Humanize your UI with proven 
+components.
 
 > **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
 > usage** while building humanize-ui.
