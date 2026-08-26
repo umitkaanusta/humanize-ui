@@ -16,49 +16,21 @@ Think of it as a LEGO box for interface work. The goal is not to paste a new the
 - Adapt component code to the product's design language.
 - Avoid Frankenstein UI made from mismatched libraries.
 
-## Install with npx
+## Install
+
+*(Requires this repo to be public — it's currently private.)*
+
+**Via [skills.sh](https://www.skills.sh)** — detects your agent and links the skill in automatically:
 
 ```bash
-npx humanize-ui
+npx skills add umitkaanusta/humanize-ui
 ```
 
-Equivalent package-runner commands:
+**Via GitHub** — clone it and point your agent at the folder, or copy `SKILL.md` into whatever skill directory your harness reads:
 
 ```bash
-pnpm dlx humanize-ui
-yarn dlx humanize-ui
-bunx humanize-ui
+git clone https://github.com/umitkaanusta/humanize-ui.git
 ```
-
-By default this downloads the portable skill folder to `./humanize-ui`.
-
-To place it directly into any agent's skill directory, pass that directory as the target:
-
-```bash
-npx humanize-ui --target ~/.config/my-agent/skills
-```
-
-## Install from Git
-
-Clone this repository anywhere your agent or harness can read skill folders:
-
-```bash
-git clone https://github.com/umitkaanusta/humanize-ui.git humanize-ui
-```
-
-Then point your agent at that folder, or copy it into the skill directory your harness expects.
-
-## Publishing
-
-`npx` runs the executable published by the npm package. Before publishing a release:
-
-```bash
-npm run check
-npm run pack:check
-npm publish
-```
-
-The install payload copies only `SKILL.md`, `README.md`, and `LICENSE` into the target skill directory.
 
 ## Built by Winglet
 
