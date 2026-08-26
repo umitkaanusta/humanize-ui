@@ -3,11 +3,11 @@
 These examples use the same brief to compare a typical generated landing
 page against one made with the `humanize-ui` skill.
 
-**Without `humanize-ui`**
-![Hero without humanize-ui](before.png)
-
 **With `humanize-ui`**
 ![Hero with humanize-ui](after.png)
+
+**Without `humanize-ui`**
+![Hero without humanize-ui](before.png)
 
 ## Prompt Without `humanize-ui`
 
