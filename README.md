@@ -1,12 +1,20 @@
 # Humanize-UI
 
-Give your coding agent some design taste. Humanize your UI with proven,
-human-designed components instead of starting from scratch.
+Give your coding agent some design taste. Humanize your UI with proven 
+components.
 
 > **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
 > usage** while building humanize-ui.
 
-Insert here: A sample homepage before and after humanize-ui.
+**Without `humanize-ui`**
+![BeaconOps landing page hero, without humanize-ui](examples/beaconops/before.png)
+
+**With `humanize-ui`**
+![BeaconOps landing page hero, made with humanize-ui](examples/beaconops/after.png)
+
+For full page and prompts:
+
+- [BeaconOps, fictional incident monitoring software](examples/beaconops)
 
 ## How it works
 
