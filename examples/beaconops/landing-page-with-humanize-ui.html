@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeaconOps — Incident monitoring that doesn't sleep</title>
+<style>
+  :root{
+    --bg: #0b0d10;
+    --bg-raised: #12151a;
+    --line: #1f242b;
+    --text: #e8eaed;
+    --text-dim: #9aa3ad;
+    --text-faint: #5c6570;
+    --amber: #f2a33c;
+    --red: #e5484d;
+    --green: #3ecf8e;
+    --radius: 10px;
+    --mono: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: inherit; text-decoration: none; }
+  img{ max-width: 100%; display:block; }
+
+  .wrap{
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(11,13,16,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  nav.wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .logo{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+  .beacon-dot{
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 0 0 rgba(242,163,60,0.5);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%   { box-shadow: 0 0 0 0 rgba(242,163,60,0.45); }
+    70%  { box-shadow: 0 0 0 8px rgba(242,163,60,0); }
+    100% { box-shadow: 0 0 0 0 rgba(242,163,60,0); }
+  }
+  .nav-links{
+    display: flex;
+    gap: 28px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+  .nav-links a:hover{ color: var(--text); }
+  .nav-cta{
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 7px;
+    background: var(--text);
+    color: var(--bg);
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+  }
+  .nav-cta:hover{ opacity: 0.85; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding: 96px 0 88px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-grid{
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .eyebrow{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .eyebrow .dot{
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+  }
+  h1{
+    font-size: clamp(34px, 4.4vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    font-weight: 650;
+  }
+  h1 .accent{ color: var(--amber); }
+  .hero-sub{
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 46ch;
+    margin: 0 0 32px;
+  }
+  .hero-actions{
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+    transition: transform 0.12s ease, opacity 0.15s ease, border-color 0.15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-primary{
+    background: var(--amber);
+    color: #1a1200;
+  }
+  .btn-primary:hover{ opacity: 0.9; }
+  .btn-ghost{
+    border: 1px solid var(--line);
+    color: var(--text);
+  }
+  .btn-ghost:hover{ border-color: #333a43; }
+  .hero-note{
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  /* mock incident panel */
+  .panel{
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 20px 50px -30px rgba(0,0,0,0.6);
+  }
+  .panel-head{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .panel-dots{ display:flex; gap:6px; }
+  .panel-dots span{
+    width:8px; height:8px; border-radius:50%;
+    background: #2a2f36;
+  }
+  .panel-body{ padding: 6px 0; }
+  .incident-row{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .incident-row:last-child{ border-bottom: none; }
+  .sev{
+    width: 7px; height: 7px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sev-crit{ background: var(--red); }
+  .sev-warn{ background: var(--amber); }
+  .sev-ok{ background: var(--green); }
+  .incident-name{ flex: 1; color: var(--text); }
+  .incident-meta{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-faint);
+  }
+  .incident-status{
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+  }
+
+  /* ---------- benefits ---------- */
+  .benefits{
+    padding: 84px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-head{
+    max-width: 560px;
+    margin: 0 0 48px;
+  }
+  .section-tag{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--amber);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .section-head h2{
+    font-size: clamp(24px, 3vw, 32px);
+    letter-spacing: -0.015em;
+    margin: 0 0 12px;
+    font-weight: 650;
+  }
+  .section-head p{
+    color: var(--text-dim);
+    font-size: 15.5px;
+    margin: 0;
+  }
+  .benefit-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .benefit-card{
+    background: var(--bg);
+    padding: 32px 28px;
+    transition: background 0.18s ease;
+  }
+  .benefit-card:hover{ background: var(--bg-raised); }
+  .benefit-icon{
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+  }
+  .benefit-icon svg{ width: 17px; height: 17px; }
+  .benefit-card h3{
+    font-size: 16.5px;
+    margin: 0 0 10px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .benefit-card p{
+    font-size: 14px;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  /* ---------- pricing strip ---------- */
+  .pricing{
+    padding: 84px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .pricing-strip{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .price-col{
+    padding: 30px 26px;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .price-col:last-child{ border-right: none; }
+  .price-col.featured{ background: var(--bg-raised); }
+  .featured-tag{
+    position: absolute;
+    top: 18px;
+    right: 26px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--amber);
+    border: 1px solid rgba(242,163,60,0.35);
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .price-name{
+    font-size: 13px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+    font-family: var(--mono);
+  }
+  .price-amount{
+    font-size: 34px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .price-amount span{
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-faint);
+  }
+  .price-desc{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    margin: 0 0 22px;
+  }
+  .price-list{
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+  .price-list li{
+    padding: 6px 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .price-list li::before{
+    content: "";
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .price-col .btn{ width: 100%; }
+
+  /* ---------- final cta ---------- */
+  .cta{
+    padding: 96px 0;
+    text-align: center;
+  }
+  .cta h2{
+    font-size: clamp(26px, 3.6vw, 38px);
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    font-weight: 650;
+  }
+  .cta p{
+    color: var(--text-dim);
+    font-size: 16px;
+    margin: 0 0 32px;
+  }
+  .cta-actions{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 28px 0;
+  }
+  .footer-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-faint);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-links{ display:flex; gap: 20px; }
+  .footer-links a:hover{ color: var(--text-dim); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 860px){
+    .hero-grid{
+      grid-template-columns: 1fr;
+    }
+    .hero{ padding: 64px 0 56px; }
+    .benefit-grid{ grid-template-columns: 1fr; }
+    .pricing-strip{ grid-template-columns: 1fr; }
+    .price-col{
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+    }
+    .price-col:last-child{ border-bottom: none; }
+    .nav-links{ display: none; }
+  }
+
+  @media (max-width: 480px){
+    .hero-actions, .cta-actions{ flex-direction: column; align-items: stretch; }
+    .footer-row{ flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo">
+      <span class="beacon-dot"></span>
+      BeaconOps
+    </div>
+    <div class="nav-links">
+      <a href="#benefits">Product</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#cta">Docs</a>
+    </div>
+    <a href="#cta" class="nav-cta">Start free</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> All systems monitored</div>
+      <h1>Know about the outage <span class="accent">before your customers do.</span></h1>
+      <p class="hero-sub">BeaconOps watches your services, APIs, and infrastructure around the clock, and pages the right person the moment something breaks — not after it's a fire.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-primary">Start monitoring free</a>
+        <a href="#benefits" class="btn btn-ghost">See how it works</a>
+      </div>
+      <div class="hero-note">No credit card required · 5-minute setup · Cancel anytime</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span>live_incidents.log</span>
+        <div class="panel-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="panel-body">
+        <div class="incident-row">
+          <span class="sev sev-crit"></span>
+          <span class="incident-name">payments-api latency spike</span>
+          <span class="incident-status">paged</span>
+        </div>
+        <div class="incident-row">
+          <span class="sev sev-warn"></span>
+          <span class="incident-name">db-replica-2 lag rising</span>
+          <span class="incident-status">watching</span>
+        </div>
+        <div class="incident-row">
+          <span class="sev sev-ok"></span>
+          <span class="incident-name">checkout-service</span>
+          <span class="incident-meta">99.98% uptime</span>
+        </div>
+        <div class="incident-row">
+          <span class="sev sev-ok"></span>
+          <span class="incident-name">auth-cluster</span>
+          <span class="incident-meta">resolved · 4m ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="benefits" id="benefits">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">Why teams switch</div>
+      <h2>Monitoring that catches problems, not just metrics</h2>
+      <p>Built for teams who are tired of noisy dashboards and missed pages.</p>
+    </div>
+
+    <div class="benefit-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        </div>
+        <h3>Real-time detection</h3>
+        <p>Checks run every 30 seconds from multiple regions, so you catch degradation before it becomes downtime.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+        </div>
+        <h3>Alerts that reach a human</h3>
+        <p>Smart on-call routing across Slack, SMS, and phone calls, with escalation if the first alert goes unanswered.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3-3L7 13.7"/></svg>
+        </div>
+        <h3>Status pages that build trust</h3>
+        <p>Public status pages update automatically during incidents, so customers get answers without opening a ticket.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">Pricing</div>
+      <h2>Straightforward plans, no per-seat surprises</h2>
+      <p>Start free, upgrade when you have more to watch.</p>
+    </div>
+
+    <div class="pricing-strip">
+      <div class="price-col">
+        <div class="price-name">Starter</div>
+        <div class="price-amount">$0<span>/mo</span></div>
+        <p class="price-desc">For small projects and side services.</p>
+        <ul class="price-list">
+          <li>5 monitors</li>
+          <li>1-minute check interval</li>
+          <li>Email alerts</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Get started</a>
+      </div>
+
+      <div class="price-col featured">
+        <span class="featured-tag">Most popular</span>
+        <div class="price-name">Team</div>
+        <div class="price-amount">$29<span>/mo</span></div>
+        <p class="price-desc">For growing teams running production services.</p>
+        <ul class="price-list">
+          <li>50 monitors</li>
+          <li>30-second check interval</li>
+          <li>Slack, SMS &amp; phone alerts</li>
+          <li>Public status page</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Start free trial</a>
+      </div>
+
+      <div class="price-col">
+        <div class="price-name">Scale</div>
+        <div class="price-amount">$99<span>/mo</span></div>
+        <p class="price-desc">For teams that need depth and control.</p>
+        <ul class="price-list">
+          <li>Unlimited monitors</li>
+          <li>Custom escalation policies</li>
+          <li>Audit logs &amp; SSO</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Contact sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="cta">
+  <div class="wrap">
+    <h2>Stop finding out about outages from your customers.</h2>
+    <p>Set up your first monitor in under 5 minutes.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn btn-primary">Start monitoring free</a>
+      <a href="#" class="btn btn-ghost">Book a demo</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>© 2026 BeaconOps</span>
+    <div class="footer-links">
+      <a href="#">Status</a>
+      <a href="#">Docs</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
