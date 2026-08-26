@@ -1,10 +1,13 @@
+<div align="center">
+
 # Humanize-UI
 
-Give your coding agent some design taste. Humanize your UI with proven 
-components.
+Give your coding agent some design taste. </br>
+Humanize your UI with proven components.
 
-> **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
-> usage** while building humanize-ui.
+*[Winglet](https://agentwinglet.com) cut 43% of my token usage while building humanize-ui.*
+
+</div>
 
 **With `humanize-ui`**
 ![BeaconOps landing page hero, made with humanize-ui](examples/beaconops/after.png)
