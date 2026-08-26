@@ -3,6 +3,8 @@
 These examples use the same brief to compare a typical generated landing
 page against one made with the `humanize-ui` skill.
 
+![Before and after comparison of the Spoke & Spanner landing page](before-after.png)
+
 ## Prompt Without `humanize-ui`
 
 ```text

@@ -6,7 +6,10 @@ human-designed components instead of starting from scratch.
 > **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
 > usage** while building humanize-ui.
 
-Insert here: A sample homepage before and after humanize-ui.
+![Before and after humanize-ui, same prompt](examples/spoke-and-spanner/hero-before-after.png)
+
+For full page and prompts: 
+[examples/spoke-and-spanner](examples/spoke-and-spanner)
 
 ## How it works
 
