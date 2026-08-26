@@ -1,0 +1,42 @@
+{
+  "name": "humanize-ui",
+  "version": "0.1.0",
+  "description": "Give your coding agent some design taste. Humanize your UI with proven, human-designed components instead of starting from scratch.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "humanize-ui": "bin/humanize-ui.js"
+  },
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "bin/humanize-ui.js"
+  ],
+  "scripts": {
+    "check": "node bin/humanize-ui.js --help",
+    "pack:check": "npm pack --dry-run"
+  },
+  "keywords": [
+    "agent-skills",
+    "ai-agents",
+    "coding-agents",
+    "agent-harness",
+    "frontend",
+    "ui",
+    "design",
+    "shadcn",
+    "tailwind"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/umitkaanusta/humanize-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/umitkaanusta/humanize-ui/issues"
+  },
+  "homepage": "https://github.com/umitkaanusta/humanize-ui#readme",
+  "engines": {
+    "node": ">=18"
+  }
+}
