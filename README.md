@@ -9,6 +9,7 @@ human-designed components instead of starting from scratch.
 Insert here: A sample homepage before and after humanize-ui.
 
 ## How it works
+
 - Inspect the existing frontend before scouting components.
 - Search curated UI sources such as Beautiful UI, beUI, Rare UI,
   Transitions.dev, and shadcn/ui.
@@ -19,21 +20,29 @@ Insert here: A sample homepage before and after humanize-ui.
 
 ## Install
 
-**Via [skills.sh](https://www.skills.sh)**  detects your agent and
+**Via [skills.sh](https://www.skills.sh) (recommended):**  detects your agent and
 links the skill in automatically:
 
 ```bash
 npx skills add umitkaanusta/humanize-ui
 ```
 
-**Via GitHub**
+**Via GitHub** clone it, then copy `SKILL.md` into your agent's
+skill directory
+
 ```bash
 git clone https://github.com/umitkaanusta/humanize-ui.git
+mkdir -p .claude/skills/humanize-ui
+cp humanize-ui/SKILL.md .claude/skills/humanize-ui/
 ```
 
+The example shows `.claude`. Use `.cursor` for Cursor, and `.agents` for Codex
+and other tools.
+
 ## How to use
-Just ask your coding agent to use the `humanize-ui` skill on the overall UI
-or for a specific screen, component, or interaction.
+
+Just ask your coding agent to use the `humanize-ui` skill on the
+overall UI or for a specific screen, component, or interaction.
 
 Like so:
 
