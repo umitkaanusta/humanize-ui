@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spoke &amp; Spanner | Neighborhood Bike Repair</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1c1a17;
+    --ink-soft: #3a352e;
+    --muted: #756b5c;
+    --paper: #f7f2e7;
+    --paper-alt: #efe6d3;
+    --paper-deep: #221f1a;
+    --rust: #c04f1e;
+    --rust-dark: #9a3c15;
+    --steel: #3c5049;
+    --line: rgba(28, 24, 18, 0.14);
+    --line-soft: rgba(28, 24, 18, 0.08);
+    --shadow: 0 10px 24px rgba(28, 20, 10, 0.08);
+    --radius: 10px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rust);
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 16px;
+    height: 2px;
+    background: var(--rust);
+    display: inline-block;
+  }
+
+  .eyebrow.center {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .eyebrow.eyebrow-light {
+    color: #e8a37c;
+  }
+
+  .eyebrow.eyebrow-light::before {
+    background: #e8a37c;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    border: 1.5px solid transparent;
+    transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--rust);
+    color: #fff8f0;
+  }
+
+  .btn-primary:hover {
+    background: var(--rust-dark);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--ink);
+    transform: translateY(-1px);
+  }
+
+  .btn-small {
+    padding: 9px 18px;
+    font-size: 14px;
+  }
+
+  .btn-large {
+    padding: 17px 32px;
+    font-size: 16px;
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--rust);
+    outline-offset: 2px;
+  }
+
+  /* Header */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(247, 242, 231, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .brand svg {
+    flex-shrink: 0;
+    color: var(--rust);
+  }
+
+  .brand em {
+    font-style: normal;
+    color: var(--rust);
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 28px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--ink-soft);
+    position: relative;
+    padding: 4px 0;
+  }
+
+  .site-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--rust);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+
+  .site-nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background-image:
+      linear-gradient(rgba(247, 242, 231, 0.97), rgba(247, 242, 231, 0.85)),
+      repeating-linear-gradient(0deg, var(--line-soft) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, var(--line-soft) 0 1px, transparent 1px 40px);
+  }
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 48px;
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  .hero h1 {
+    font-size: 46px;
+    line-height: 1.1;
+    margin: 18px 0 20px;
+  }
+
+  .hero .lead {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 46ch;
+    margin-bottom: 30px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .hero-stats {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    max-width: 40ch;
+  }
+
+  .hero-stats li {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .hero-stats strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .hero-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .hero-art svg {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+    color: var(--ink);
+  }
+
+  .hero-art .spin-ring {
+    animation: spin 40s linear infinite;
+    transform-origin: 200px 200px;
+  }
+
+  .hero-art .accent-dot {
+    fill: var(--rust);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-art .spin-ring {
+      animation: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Benefits */
+  .benefits {
+    padding: 88px 0;
+  }
+
+  .benefits .section-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 56px;
+  }
+
+  .benefits h2 {
+    font-size: 32px;
+    margin-top: 14px;
+  }
+
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .benefit {
+    position: relative;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px 26px;
+    box-shadow: var(--shadow);
+  }
+
+  .benefit-index {
+    position: absolute;
+    top: 22px;
+    right: 24px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--line);
+  }
+
+  .benefit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 9px;
+    background: var(--paper-alt);
+    color: var(--rust);
+    margin-bottom: 18px;
+  }
+
+  .benefit h3 {
+    font-size: 19px;
+    margin-bottom: 10px;
+  }
+
+  .benefit p {
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+
+  /* Pricing / ticket */
+  .pricing {
+    padding: 88px 0;
+    background: var(--paper-alt);
+  }
+
+  .pricing .section-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 48px;
+  }
+
+  .pricing h2 {
+    font-size: 32px;
+    margin-top: 14px;
+  }
+
+  .ticket {
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .ticket-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 26px 32px;
+    position: relative;
+  }
+
+  .ticket-row + .ticket-row {
+    border-top: 1.5px dashed var(--line);
+  }
+
+  .ticket-row + .ticket-row::before,
+  .ticket-row + .ticket-row::after {
+    content: "";
+    position: absolute;
+    top: -9px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--paper-alt);
+  }
+
+  .ticket-row + .ticket-row::before { left: -9px; }
+  .ticket-row + .ticket-row::after { right: -9px; }
+
+  .ticket-name {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ticket-name strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .ticket-name span {
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .ticket-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--rust);
+    white-space: nowrap;
+  }
+
+  .ticket-note {
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 20px;
+  }
+
+  /* CTA */
+  .cta {
+    background: var(--paper-deep);
+    color: #f3ede0;
+    padding: 76px 0;
+    background-image:
+      radial-gradient(600px 240px at 15% 20%, rgba(192, 79, 30, 0.16), transparent 60%);
+  }
+
+  .cta-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .cta h2 {
+    color: #fff8f0;
+    font-size: 30px;
+    margin: 14px 0 10px;
+    max-width: 20ch;
+  }
+
+  .cta-address {
+    color: #c9bfae;
+    font-size: 15px;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--paper-deep);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 26px 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-inner .brand {
+    color: #f3ede0;
+    font-size: 15px;
+  }
+
+  .footer-inner .brand svg {
+    color: var(--rust);
+    width: 18px;
+    height: 18px;
+  }
+
+  .footer-inner p {
+    font-size: 13px;
+    color: #948a79;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      padding-top: 52px;
+      padding-bottom: 52px;
+      text-align: left;
+    }
+
+    .hero-art {
+      order: -1;
+      max-width: 220px;
+      margin: 0 auto 8px;
+    }
+
+    .hero-art svg {
+      max-width: 220px;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+    }
+
+    .site-nav {
+      display: none;
+    }
+
+    .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .benefits, .pricing {
+      padding: 64px 0;
+    }
+
+    .cta-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .cta .btn-large {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .wrap {
+      padding: 0 18px;
+    }
+
+    .hero h1 {
+      font-size: 30px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .ticket-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 22px 20px;
+    }
+
+    .ticket-price {
+      font-size: 22px;
+    }
+
+    .footer-inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="12" cy="12" r="9"/>
+          <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+          <path d="M12 12 L12 3.4 M12 12 L18.8 8.7 M12 12 L18.8 15.3 M12 12 L12 20.6 M12 12 L5.2 15.3 M12 12 L5.2 8.7"/>
+        </svg>
+        <span>Spoke <em>&amp;</em> Spanner</span>
+      </a>
+      <nav class="site-nav">
+        <a href="#services">Services</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#visit">Visit</a>
+      </nav>
+      <a href="#visit" class="btn btn-primary btn-small">Book a Repair</a>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Neighborhood Bike Shop · Est. 2016</p>
+        <h1>Keeping the block rolling, one bike at a time.</h1>
+        <p class="lead">Flat tire, squeaky chain, or a bike that's been in the garage since spring — bring it by. Honest work, done by hand, by the mechanics on your street.</p>
+        <div class="hero-actions">
+          <a href="#visit" class="btn btn-primary">Book a Repair</a>
+          <a href="#pricing" class="btn btn-ghost">See Pricing</a>
+        </div>
+        <ul class="hero-stats">
+          <li><strong>Same-day</strong> turnaround on most repairs</li>
+          <li><strong>Walk-ins</strong> welcome — no appointment needed</li>
+          <li><strong>7 years</strong> fixing bikes on Maple Street</li>
+        </ul>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 400" fill="none">
+          <g class="spin-ring">
+            <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 10" opacity="0.5"/>
+            <circle cx="200" cy="200" r="130" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M200 200 L200 70 M200 200 L312.6 135 M200 200 L312.6 265 M200 200 L200 330 M200 200 L87.4 265 M200 200 L87.4 135" stroke="currentColor" stroke-width="1.5"/>
+            <circle class="accent-dot" cx="200" cy="70" r="6"/>
+          </g>
+          <circle cx="200" cy="200" r="34" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="200" cy="200" r="6" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="benefits" id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow center">Why Riders Come Back</p>
+        <h2>Repairs you can trust, from people you'll recognize.</h2>
+      </div>
+      <div class="benefit-grid">
+        <article class="benefit">
+          <span class="benefit-index">01</span>
+          <span class="benefit-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4l-2.6 2.6-2-2z"/>
+            </svg>
+          </span>
+          <h3>Mechanics who know your bike</h3>
+          <p>Two decades of combined wrench time, from department-store cruisers to race-day road bikes. We diagnose before we quote.</p>
+        </article>
+        <article class="benefit">
+          <span class="benefit-index">02</span>
+          <span class="benefit-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="8.5"/>
+              <path d="M12 7.5V12l3 2"/>
+            </svg>
+          </span>
+          <h3>Most repairs, same day</h3>
+          <p>Drop it off in the morning, ride it home by evening. We'll call if a part needs ordering — no surprise waits.</p>
+        </article>
+        <article class="benefit">
+          <span class="benefit-index">03</span>
+          <span class="benefit-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12.5 3.5h5a1 1 0 0 1 1 1v5a1 1 0 0 1-.3.7l-8.6 8.6a1 1 0 0 1-1.4 0l-5.6-5.6a1 1 0 0 1 0-1.4l8.6-8.6a1 1 0 0 1 .7-.3z"/>
+              <circle cx="16.2" cy="7.8" r="1.2" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <h3>Upfront, honest pricing</h3>
+          <p>Flat rates on the work we do most, and a real quote before anything extra. No bill shock at pickup.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow center">Service Menu</p>
+        <h2>Simple pricing, no surprises at pickup.</h2>
+      </div>
+      <div class="ticket">
+        <div class="ticket-row">
+          <div class="ticket-name">
+            <strong>Safety Tune-Up</strong>
+            <span>Brake &amp; gear adjustment, 20-point check</span>
+          </div>
+          <div class="ticket-price">$45</div>
+        </div>
+        <div class="ticket-row">
+          <div class="ticket-name">
+            <strong>Full Overhaul</strong>
+            <span>Complete strip-down, clean &amp; rebuild</span>
+          </div>
+          <div class="ticket-price">$85</div>
+        </div>
+        <div class="ticket-row">
+          <div class="ticket-name">
+            <strong>Flat Repair</strong>
+            <span>Tube patch or replacement, wheel true</span>
+          </div>
+          <div class="ticket-price">$15</div>
+        </div>
+      </div>
+      <p class="ticket-note">Parts — tubes, cables, chains — billed separately at cost. We'll always quote before we start.</p>
+    </div>
+  </section>
+
+  <section class="cta" id="visit">
+    <div class="wrap cta-inner">
+      <div>
+        <p class="eyebrow eyebrow-light">Come By The Shop</p>
+        <h2>Bring it in — most repairs go same day.</h2>
+        <p class="cta-address">412 Maple Street · Tue–Sun, 9am–6pm</p>
+      </div>
+      <a href="tel:5551234567" class="btn btn-primary btn-large">Call (555) 123-4567</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span class="brand">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 12 L12 3.4 M12 12 L18.8 8.7 M12 12 L18.8 15.3 M12 12 L12 20.6 M12 12 L5.2 15.3 M12 12 L5.2 8.7"/>
+        </svg>
+        Spoke &amp; Spanner
+      </span>
+      <p>&copy; 2026 Spoke &amp; Spanner. Fixing bikes on Maple Street.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
