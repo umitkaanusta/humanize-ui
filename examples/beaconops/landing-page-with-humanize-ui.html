@@ -3,754 +3,1023 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeaconOps — Incident monitoring that doesn't sleep</title>
+<title>BeaconOps | Incident Monitoring Software</title>
 <style>
-  :root{
-    --bg: #0b0d10;
-    --bg-raised: #12151a;
-    --line: #1f242b;
-    --text: #e8eaed;
-    --text-dim: #9aa3ad;
-    --text-faint: #5c6570;
-    --amber: #f2a33c;
-    --red: #e5484d;
-    --green: #3ecf8e;
-    --radius: 10px;
-    --mono: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+  :root {
+    --bg: #0b0d0f;
+    --panel: #111417;
+    --panel-2: #171b20;
+    --line: #2a3138;
+    --line-soft: rgba(255,255,255,0.08);
+    --text: #f2f0e8;
+    --muted: #a1a7ad;
+    --faint: #69717a;
+    --amber: #f4a340;
+    --amber-soft: rgba(244,163,64,0.16);
+    --green: #49d18f;
+    --green-soft: rgba(73,209,143,0.14);
+    --radius: 8px;
+    --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    --shadow: 0 28px 80px rgba(0,0,0,0.36);
   }
 
-  *{ box-sizing: border-box; }
-  html{ scroll-behavior: smooth; }
-  body{
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
     margin: 0;
-    background: var(--bg);
+    overflow-x: hidden;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      var(--bg);
+    background-size: 44px 44px;
     color: var(--text);
     font-family: var(--sans);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
-  a{ color: inherit; text-decoration: none; }
-  img{ max-width: 100%; display:block; }
-  a:focus-visible, button:focus-visible{
+
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible {
     outline: 2px solid var(--amber);
-    outline-offset: 2px;
-    border-radius: 4px;
+    outline-offset: 3px;
   }
 
-  .wrap{
-    max-width: 1120px;
+  .wrap {
+    width: min(1160px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 0 24px;
   }
 
-  /* ---------- nav ---------- */
-  header{
-    border-bottom: 1px solid var(--line);
+  header {
     position: sticky;
     top: 0;
-    background: rgba(11,13,16,0.85);
-    backdrop-filter: blur(8px);
-    z-index: 10;
+    z-index: 20;
+    border-bottom: 1px solid var(--line-soft);
+    background: rgba(11,13,15,0.82);
+    backdrop-filter: blur(18px);
   }
-  nav.wrap{
-    display: flex;
+
+  .topbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 28px;
     align-items: center;
-    justify-content: space-between;
-    height: 64px;
+    min-height: 64px;
   }
-  .logo{
-    display: flex;
+
+  .brand {
+    display: inline-flex;
     align-items: center;
+    gap: 10px;
+    font-weight: 720;
+    letter-spacing: 0;
+  }
+
+  .brand-mark {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 1px solid rgba(244,163,64,0.38);
+    border-radius: 7px;
+    background: #15110b;
+  }
+
+  .brand-mark::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 0 6px rgba(244,163,64,0.12);
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 680;
+  }
+
+  .nav-links a { transition: color 0.16s ease; }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta,
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    border-radius: 7px;
+    font-weight: 760;
+    transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+  }
+
+  .nav-cta {
+    border: 1px solid rgba(244,163,64,0.36);
+    background: var(--amber);
+    color: #1c1205;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .button {
     gap: 9px;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: -0.01em;
+    border: 1px solid var(--line);
+    padding: 0 16px;
+    color: var(--text);
+    font-size: 14px;
   }
-  .beacon-dot{
+
+  .button.primary {
+    border-color: rgba(244,163,64,0.5);
+    background: var(--amber);
+    color: #1c1205;
+    box-shadow: 0 16px 34px rgba(244,163,64,0.16);
+  }
+
+  .button.secondary { background: rgba(255,255,255,0.04); }
+  .nav-cta:hover, .button:hover { transform: translateY(-1px); }
+  .button.secondary:hover {
+    border-color: rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.07);
+  }
+
+  .hero {
+    position: relative;
+    padding: 78px 0 82px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -220px;
+    right: max(-220px, calc((100vw - 1160px) / 2 - 280px));
+    width: 720px;
+    height: 720px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,163,64,0.12), transparent 68%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(520px, 1.08fr);
+    gap: 46px;
+    align-items: center;
+  }
+
+  .eyebrow {
+    display: inline-grid;
+    grid-template-columns: auto 1fr;
+    gap: 9px;
+    align-items: center;
+    color: var(--amber);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 760;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  h1, h2, h3, p { margin: 0; }
+
+  h1 {
+    max-width: 620px;
+    margin-top: 20px;
+    font-size: clamp(46px, 6vw, 78px);
+    line-height: 0.96;
+    letter-spacing: 0;
+  }
+
+  h1 span {
+    display: block;
+  }
+
+  .hero-copy {
+    max-width: 590px;
+    margin-top: 22px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .proof-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 620px;
+    margin-top: 28px;
+  }
+
+  .proof-item {
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.035);
+    padding: 13px 14px;
+  }
+
+  .proof-item strong {
+    display: block;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .proof-item span {
+    color: var(--faint);
+    font-size: 12px;
+    font-weight: 680;
+  }
+
+  .desk {
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    background: #0f1215;
+    box-shadow: var(--shadow);
+  }
+
+  .desk-top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    min-height: 44px;
+    border-bottom: 1px solid var(--line-soft);
+    padding: 0 14px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .lights {
+    display: flex;
+    gap: 7px;
+  }
+
+  .lights span {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--amber);
-    box-shadow: 0 0 0 0 rgba(242,163,60,0.5);
-    animation: pulse 2.4s ease-out infinite;
+    background: var(--faint);
   }
-  @keyframes pulse{
-    0%   { box-shadow: 0 0 0 0 rgba(242,163,60,0.45); }
-    70%  { box-shadow: 0 0 0 8px rgba(242,163,60,0); }
-    100% { box-shadow: 0 0 0 0 rgba(242,163,60,0); }
-  }
-  .nav-links{
-    display: flex;
-    gap: 28px;
-    font-size: 14px;
-    color: var(--text-dim);
-  }
-  .nav-links a:hover{ color: var(--text); }
-  .nav-cta{
-    font-size: 14px;
-    padding: 8px 16px;
-    border-radius: 7px;
-    background: var(--text);
-    color: var(--bg);
-    font-weight: 600;
-    transition: opacity 0.15s ease;
-  }
-  .nav-cta:hover{ opacity: 0.85; }
 
-  /* ---------- hero ---------- */
-  .hero{
-    padding: 96px 0 88px;
-    border-bottom: 1px solid var(--line);
-    position: relative;
-    overflow: hidden;
+  .lights span:nth-child(2) { background: var(--amber); }
+  .lights span:nth-child(3) { background: var(--green); }
+
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+    font-weight: 760;
   }
-  .hero::before{
+
+  .live::before {
     content: "";
-    position: absolute;
-    top: -140px;
-    right: -100px;
-    width: 680px;
-    height: 680px;
-    background: radial-gradient(circle, rgba(242,163,60,0.10), transparent 70%);
-    pointer-events: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
   }
-  .hero-grid{
+
+  .desk-body {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 56px;
-    align-items: center;
-    position: relative;
+    grid-template-columns: 166px 1fr;
+    min-height: 460px;
   }
-  .eyebrow{
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+
+  .sidebar {
+    border-right: 1px solid var(--line-soft);
+    background: #0a0d0f;
+    padding: 16px 12px;
+  }
+
+  .side-label {
+    margin: 2px 8px 10px;
+    color: var(--faint);
     font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    color: var(--text-dim);
-    border: 1px solid var(--line);
-    background: var(--bg-raised);
-    padding: 6px 12px;
-    border-radius: 999px;
-    margin-bottom: 22px;
+    font-size: 10px;
+    text-transform: uppercase;
   }
-  .eyebrow .dot{
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 0 0 rgba(62,207,142,0.5);
-    animation: livepulse 1.8s ease-out infinite;
-  }
-  h1{
-    font-size: clamp(34px, 4.4vw, 52px);
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    margin: 0 0 20px;
-    font-weight: 650;
-  }
-  h1 .accent{ color: var(--amber); }
-  .hero-sub{
-    font-size: 17px;
-    color: var(--text-dim);
-    max-width: 46ch;
-    margin: 0 0 32px;
-  }
-  .hero-actions{
+
+  .side-item {
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .btn{
-    display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-size: 14.5px;
-    font-weight: 600;
-    transition: transform 0.12s ease, opacity 0.15s ease, border-color 0.15s ease;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    color: var(--muted);
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 720;
   }
-  .btn:active{ transform: translateY(1px); }
-  .btn-primary{
-    background: var(--amber);
-    color: #1a1200;
-  }
-  .btn-primary:hover{ opacity: 0.9; }
-  .btn-arrow{
-    width: 14px; height: 14px;
-    transition: transform 0.18s ease;
-  }
-  .btn-primary:hover .btn-arrow{ transform: translateX(3px); }
-  .btn-ghost{
-    border: 1px solid var(--line);
+
+  .side-item.active {
+    background: rgba(244,163,64,0.11);
     color: var(--text);
   }
-  .btn-ghost:hover{ border-color: #333a43; }
-  .hero-trust{
-    list-style: none;
-    padding: 0;
-    margin: 18px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 20px;
-    font-size: 13px;
-    color: var(--text-faint);
-  }
-  .hero-trust li{
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .hero-trust svg{
-    width: 13px; height: 13px;
-    color: var(--green);
-    flex-shrink: 0;
+
+  .side-item::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--faint);
   }
 
-  /* mock incident panel */
-  .panel{
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: 0 20px 50px -30px rgba(0,0,0,0.6);
+  .side-item.active::before { background: var(--amber); }
+
+  .workbench {
+    min-width: 0;
+    padding: 18px;
   }
-  .panel-head{
-    display:flex;
-    align-items:center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--line);
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-dim);
+
+  .incident-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: start;
+    margin-bottom: 14px;
   }
-  .live-badge{
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--green);
+
+  .incident-head h2 {
+    font-size: 25px;
+    line-height: 1.1;
   }
-  .live-dot{
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 0 0 rgba(62,207,142,0.5);
-    animation: livepulse 1.8s ease-out infinite;
-  }
-  @keyframes livepulse{
-    0%   { box-shadow: 0 0 0 0 rgba(62,207,142,0.45); }
-    70%  { box-shadow: 0 0 0 6px rgba(62,207,142,0); }
-    100% { box-shadow: 0 0 0 0 rgba(62,207,142,0); }
-  }
-  .panel-body{ padding: 6px 0; }
-  .incident-row{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--line);
+
+  .incident-head p {
+    margin-top: 5px;
+    color: var(--muted);
     font-size: 13px;
   }
-  .incident-row:last-child{ border-bottom: none; }
-  .incident-row.is-flash{ animation: rowflash 2.6s ease-in-out infinite; }
-  @keyframes rowflash{
-    0%, 100% { background: transparent; }
-    50%      { background: rgba(229,72,77,0.07); }
-  }
-  .sev{
-    width: 7px; height: 7px; border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .sev-crit{ background: var(--red); }
-  .sev-warn{ background: var(--amber); }
-  .sev-ok{ background: var(--green); }
-  .incident-name{ flex: 1; color: var(--text); }
-  .incident-meta{
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--text-faint);
-  }
-  .incident-status{
+
+  .severity {
+    border: 1px solid rgba(244,163,64,0.3);
+    border-radius: 999px;
+    background: var(--amber-soft);
+    color: var(--amber);
+    padding: 7px 11px;
     font-family: var(--mono);
     font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 5px;
-    border: 1px solid var(--line);
-    color: var(--text-dim);
-  }
-
-  /* ---------- integrations ---------- */
-  .integrations{
-    padding: 36px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .integrations-row{
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .integrations-label{
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-faint);
+    font-weight: 760;
     white-space: nowrap;
   }
-  .integrations-marks{
-    display: flex;
-    align-items: center;
+
+  .signal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    flex-wrap: wrap;
   }
-  .tool-chip{
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--text-dim);
-    border: 1px solid var(--line);
-    background: var(--bg-raised);
-    padding: 6px 12px;
-    border-radius: 7px;
-    transition: color 0.15s ease, border-color 0.15s ease;
-  }
-  .tool-chip:hover{ color: var(--text); border-color: #333a43; }
 
-  /* ---------- benefits ---------- */
-  .benefits{
-    padding: 84px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .section-head{
-    max-width: 560px;
-    margin: 0 0 48px;
-  }
-  .section-tag{
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--amber);
-    letter-spacing: 0.04em;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-  }
-  .section-head h2{
-    font-size: clamp(24px, 3vw, 32px);
-    letter-spacing: -0.015em;
-    margin: 0 0 12px;
-    font-weight: 650;
-  }
-  .section-head p{
-    color: var(--text-dim);
-    font-size: 15.5px;
-    margin: 0;
-  }
-  .benefit-grid{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .benefit-card{
-    background: var(--bg);
-    padding: 32px 28px;
-    position: relative;
-    transition: background 0.18s ease;
-  }
-  .benefit-card::before{
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--amber);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.22s ease;
-  }
-  .benefit-card:hover{ background: var(--bg-raised); }
-  .benefit-card:hover::before{ transform: scaleX(1); }
-  .benefit-index{
-    position: absolute;
-    top: 30px;
-    right: 28px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-faint);
-  }
-  .benefit-icon{
-    width: 34px;
-    height: 34px;
+  .signal {
+    border: 1px solid var(--line-soft);
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    border: 1px solid var(--line);
-    background: var(--bg-raised);
-    transition: background 0.18s ease, border-color 0.18s ease;
-  }
-  .benefit-card:hover .benefit-icon{
-    background: rgba(242,163,60,0.08);
-    border-color: rgba(242,163,60,0.35);
-  }
-  .benefit-icon svg{ width: 17px; height: 17px; }
-  .benefit-card h3{
-    font-size: 16.5px;
-    margin: 0 0 10px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  .benefit-card p{
-    font-size: 14px;
-    color: var(--text-dim);
-    margin: 0;
+    background: rgba(255,255,255,0.035);
+    padding: 12px;
   }
 
-  /* ---------- pricing strip ---------- */
-  .pricing{
-    padding: 84px 0;
-    border-bottom: 1px solid var(--line);
+  .signal span {
+    color: var(--faint);
+    font-family: var(--mono);
+    font-size: 11px;
   }
-  .pricing-strip{
+
+  .signal strong {
+    display: block;
+    margin-top: 7px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 22px;
+    line-height: 1.05;
+  }
+
+  .ops-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    overflow: hidden;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 10px;
+    margin-top: 10px;
   }
-  .price-col{
-    padding: 30px 26px;
-    border-right: 1px solid var(--line);
-    position: relative;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  .chart,
+  .timeline {
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
   }
-  .price-col:hover{ transform: translateY(-2px); }
-  .price-col:last-child{ border-right: none; }
-  .price-col.featured{
-    background: var(--bg-raised);
-    box-shadow: 0 0 0 1px rgba(242,163,60,0.18) inset;
+
+  .chart {
+    min-height: 188px;
+    padding: 14px;
   }
-  .featured-tag{
-    position: absolute;
-    top: 18px;
-    right: 26px;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    color: var(--amber);
-    border: 1px solid rgba(242,163,60,0.35);
-    padding: 3px 8px;
-    border-radius: 999px;
-  }
-  .price-name{
-    font-size: 13px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 14px;
-    font-family: var(--mono);
-  }
-  .price-amount{
-    font-size: 34px;
-    font-weight: 650;
-    letter-spacing: -0.02em;
-    margin-bottom: 4px;
-  }
-  .price-amount span{
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-faint);
-  }
-  .price-desc{
-    font-size: 13.5px;
-    color: var(--text-dim);
-    margin: 0 0 22px;
-  }
-  .price-list{
-    list-style: none;
-    padding: 0;
-    margin: 0 0 24px;
-    font-size: 13.5px;
-    color: var(--text-dim);
-  }
-  .price-list li{
-    padding: 6px 0;
+
+  .chart-title,
+  .timeline-title {
     display: flex;
-    gap: 8px;
-    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--faint);
+    font-family: var(--mono);
+    font-size: 11px;
   }
-  .price-list li::before{
+
+  .bars {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    align-items: end;
+    gap: 5px;
+    height: 126px;
+    margin-top: 14px;
+  }
+
+  .bars span {
+    min-height: 16px;
+    border-radius: 4px 4px 1px 1px;
+    background: linear-gradient(180deg, var(--amber), rgba(244,163,64,0.24));
+  }
+
+  .timeline {
+    padding: 14px;
+  }
+
+  .event-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .event {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 9px;
+    align-items: start;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .event time {
+    color: var(--faint);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .event strong {
+    display: block;
+    color: var(--text);
+    font-size: 12px;
+  }
+
+  .event::before {
     content: "";
-    width: 4px; height: 4px;
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
     border-radius: 50%;
     background: var(--green);
-    margin-top: 7px;
-    flex-shrink: 0;
   }
-  .price-col .btn{ width: 100%; }
 
-  /* ---------- final cta ---------- */
-  .cta{
-    padding: 96px 0;
+  .owner-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+    border: 1px solid rgba(73,209,143,0.22);
+    border-radius: 8px;
+    background: var(--green-soft);
+    padding: 12px;
+  }
+
+  .owner-avatar {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(73,209,143,0.18);
+    color: var(--green);
+    font-family: var(--mono);
+    font-weight: 780;
+  }
+
+  .owner-row strong {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .owner-row span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .owner-row button {
+    min-height: 34px;
+    border: 1px solid rgba(73,209,143,0.28);
+    border-radius: 6px;
+    background: rgba(73,209,143,0.16);
+    color: var(--green);
+    padding: 0 11px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 760;
+  }
+
+  section.band {
+    padding: 78px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .section-head {
+    max-width: 760px;
+    margin-bottom: 32px;
+  }
+
+  .section-head.center {
+    margin-right: auto;
+    margin-left: auto;
     text-align: center;
   }
-  .cta h2{
-    font-size: clamp(26px, 3.6vw, 38px);
-    letter-spacing: -0.02em;
-    margin: 0 0 14px;
-    font-weight: 650;
+
+  .section-head h2 {
+    margin-top: 12px;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.02;
+    letter-spacing: 0;
   }
-  .cta p{
-    color: var(--text-dim);
+
+  .section-head p {
+    margin-top: 14px;
+    color: var(--muted);
     font-size: 16px;
-    margin: 0 0 32px;
-  }
-  .cta-actions{
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
   }
 
-  footer{
-    border-top: 1px solid var(--line);
-    padding: 28px 0;
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
   }
-  .footer-row{
-    display: flex;
+
+  .benefit {
+    min-height: 250px;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+    padding: 20px;
+  }
+
+  .benefit code {
+    display: inline-flex;
+    margin-bottom: 28px;
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    color: var(--amber);
+    padding: 5px 9px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .benefit h3 {
+    font-size: 19px;
+    line-height: 1.18;
+  }
+
+  .benefit p {
+    margin-top: 11px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .pricing-board {
+    overflow: hidden;
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  .plan-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 22px;
     align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
-    color: var(--text-faint);
-    flex-wrap: wrap;
-    gap: 12px;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--line-soft);
   }
-  .footer-links{ display:flex; gap: 20px; }
-  .footer-links a:hover{ color: var(--text-dim); }
 
-  /* ---------- responsive ---------- */
-  @media (max-width: 860px){
-    .hero-grid{
+  .plan-row:last-child { border-bottom: 0; }
+  .plan-row h3 { font-size: 18px; }
+  .plan-row p {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .plan-tag {
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    color: var(--muted);
+    padding: 7px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .price {
+    min-width: 92px;
+    color: var(--amber);
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 800;
+  }
+
+  .cta {
+    padding: 74px 0;
+    background: linear-gradient(180deg, #111417, #090b0d);
+  }
+
+  .cta-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .cta h2 {
+    max-width: 680px;
+    font-size: clamp(34px, 4.8vw, 58px);
+    line-height: 1.02;
+  }
+
+  .cta p {
+    max-width: 560px;
+    margin-top: 14px;
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--line-soft);
+    color: var(--faint);
+    padding: 22px 0;
+    font-size: 12px;
+  }
+
+  footer .wrap {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .hero-grid,
+    .ops-grid,
+    .benefit-grid,
+    .cta-grid {
       grid-template-columns: 1fr;
     }
-    .hero{ padding: 64px 0 56px; }
-    .benefit-grid{ grid-template-columns: 1fr; }
-    .pricing-strip{ grid-template-columns: 1fr; }
-    .price-col{
-      border-right: none;
-      border-bottom: 1px solid var(--line);
+
+    .desk {
+      max-width: 720px;
     }
-    .price-col:last-child{ border-bottom: none; }
-    .nav-links{ display: none; }
-    .integrations-row{ flex-direction: column; align-items: flex-start; gap: 14px; }
   }
 
-  @media (max-width: 480px){
-    .hero-actions, .cta-actions{ flex-direction: column; align-items: stretch; }
-    .footer-row{ flex-direction: column; align-items: flex-start; }
-  }
+  @media (max-width: 700px) {
+    .wrap {
+      width: 100%;
+      padding: 0 16px;
+    }
 
-  @media (prefers-reduced-motion: reduce){
-    .beacon-dot, .live-dot, .eyebrow .dot{ animation: none; }
-    .incident-row.is-flash{ animation: none; }
+    .topbar {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 14px 0;
+    }
+
+    .nav-links {
+      justify-content: flex-start;
+      gap: 22px;
+    }
+
+    .nav-cta {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 56px 0 62px;
+    }
+
+    .hero-grid,
+    .desk,
+    .workbench {
+      min-width: 0;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 36px;
+      line-height: 1.02;
+      overflow-wrap: normal;
+    }
+
+    .hero-copy {
+      font-size: 16px;
+      max-width: 320px;
+    }
+
+    .incident-head p {
+      max-width: 310px;
+    }
+
+    .proof-strip,
+    .signal-grid,
+    .desk-body,
+    .incident-head,
+    .owner-row,
+    .plan-row,
+    footer .wrap {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      display: none;
+    }
+
+    .desk-top {
+      grid-template-columns: auto 1fr;
+    }
+
+    .desk-top > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .desk-top .live {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+
+    .severity,
+    .price {
+      width: 100%;
+      text-align: left;
+    }
+
+    .owner-row button {
+      width: 100%;
+    }
   }
 </style>
 </head>
 <body>
-
-<header>
-  <nav class="wrap">
-    <div class="logo">
-      <span class="beacon-dot"></span>
-      BeaconOps
-    </div>
-    <div class="nav-links">
-      <a href="#benefits">Product</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#cta">Docs</a>
-    </div>
-    <a href="#cta" class="nav-cta">Start free</a>
-  </nav>
-</header>
-
-<section class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <div class="eyebrow"><span class="dot"></span> All systems monitored</div>
-      <h1>Know about the outage <span class="accent">before your customers do.</span></h1>
-      <p class="hero-sub">BeaconOps watches your services, APIs, and infrastructure around the clock, and pages the right person the moment something breaks — not after it's a fire.</p>
-      <div class="hero-actions">
-        <a href="#cta" class="btn btn-primary">
-          Start monitoring free
-          <svg class="btn-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-        </a>
-        <a href="#benefits" class="btn btn-ghost">See how it works</a>
+  <header>
+    <nav class="wrap topbar" aria-label="Primary navigation">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>BeaconOps</span>
+      </a>
+      <div class="nav-links">
+        <a href="#workflow">Workflow</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Teams</a>
       </div>
-      <ul class="hero-trust">
-        <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5L16 6"/></svg>No credit card required</li>
-        <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5L16 6"/></svg>5-minute setup</li>
-        <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5L16 6"/></svg>Cancel anytime</li>
-      </ul>
-    </div>
+      <a class="nav-cta" href="#contact">Book a drill</a>
+    </nav>
+  </header>
 
-    <div class="panel">
-      <div class="panel-head">
-        <span>live_incidents.log</span>
-        <div class="live-badge"><span class="live-dot"></span>Live</div>
-      </div>
-      <div class="panel-body">
-        <div class="incident-row is-flash">
-          <span class="sev sev-crit"></span>
-          <span class="incident-name">payments-api latency spike</span>
-          <span class="incident-status">paged</span>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1><span>Know about</span><span>the outage before your</span><span>customers do.</span></h1>
+          <p class="hero-copy">BeaconOps watches your services, APIs, and infrastructure, then routes the right people with context before customers start asking what broke.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#contact">Run a test incident</a>
+            <a class="button secondary" href="#pricing">Compare plans</a>
+          </div>
+          <div class="proof-strip" aria-label="Product proof points">
+            <div class="proof-item">
+              <strong>42s</strong>
+              <span>median owner route</span>
+            </div>
+            <div class="proof-item">
+              <strong>18</strong>
+              <span>signal sources grouped</span>
+            </div>
+            <div class="proof-item">
+              <strong>3 min</strong>
+              <span>status draft target</span>
+            </div>
+          </div>
         </div>
-        <div class="incident-row">
-          <span class="sev sev-warn"></span>
-          <span class="incident-name">db-replica-2 lag rising</span>
-          <span class="incident-status">watching</span>
+
+        <section class="desk" aria-label="BeaconOps incident desk preview">
+          <div class="desk-top">
+            <div class="lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span>incident/checkouts-api/INC-4187</span>
+            <span class="live">live</span>
+          </div>
+          <div class="desk-body">
+            <aside class="sidebar">
+              <div class="side-label">Command</div>
+              <div class="side-item active">Incidents</div>
+              <div class="side-item">Services</div>
+              <div class="side-item">Deploys</div>
+              <div class="side-item">Status</div>
+              <div class="side-label" style="margin-top:22px;">Owners</div>
+              <div class="side-item">Payments</div>
+              <div class="side-item">Platform</div>
+            </aside>
+
+            <div class="workbench">
+              <div class="incident-head">
+                <div>
+                  <h2>Checkout API latency</h2>
+                  <p>Customer-impacting spike grouped from Datadog, Sentry, and deploy e3f91c.</p>
+                </div>
+                <span class="severity">SEV-2 active</span>
+              </div>
+
+              <div class="signal-grid">
+                <div class="signal">
+                  <span>p95 latency</span>
+                  <strong>846ms</strong>
+                </div>
+                <div class="signal">
+                  <span>error rate</span>
+                  <strong>1.9%</strong>
+                </div>
+                <div class="signal">
+                  <span>affected</span>
+                  <strong>12k</strong>
+                </div>
+              </div>
+
+              <div class="ops-grid">
+                <div class="chart">
+                  <div class="chart-title"><span>latency window</span><span>last 18m</span></div>
+                  <div class="bars" aria-hidden="true">
+                    <span style="height:34%;"></span>
+                    <span style="height:38%;"></span>
+                    <span style="height:36%;"></span>
+                    <span style="height:42%;"></span>
+                    <span style="height:45%;"></span>
+                    <span style="height:48%;"></span>
+                    <span style="height:43%;"></span>
+                    <span style="height:52%;"></span>
+                    <span style="height:56%;"></span>
+                    <span style="height:63%;"></span>
+                    <span style="height:78%;"></span>
+                    <span style="height:91%;"></span>
+                    <span style="height:83%;"></span>
+                    <span style="height:74%;"></span>
+                    <span style="height:66%;"></span>
+                    <span style="height:59%;"></span>
+                    <span style="height:51%;"></span>
+                    <span style="height:46%;"></span>
+                  </div>
+                </div>
+
+                <div class="timeline">
+                  <div class="timeline-title"><span>timeline</span><span>auto-built</span></div>
+                  <div class="event-list">
+                    <div class="event">
+                      <div><time>02:14</time><strong>Deploy marker matched</strong>Gateway release e3f91c.</div>
+                    </div>
+                    <div class="event">
+                      <div><time>02:16</time><strong>Signals grouped</strong>Three alerts, one incident.</div>
+                    </div>
+                    <div class="event">
+                      <div><time>02:17</time><strong>Status draft ready</strong>External update queued.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="owner-row">
+                <div class="owner-avatar">MC</div>
+                <div>
+                  <strong>Mia Chen routed as incident lead</strong>
+                  <span>Payments on-call, rollback runbook attached.</span>
+                </div>
+                <button type="button">Open room</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="band" id="workflow">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Workflow, not more alerts</div>
+          <h2>BeaconOps follows the incident path your team already takes.</h2>
+          <p>The product surface is organized around ownership, customer impact, and response artifacts instead of another wall of disconnected charts.</p>
         </div>
-        <div class="incident-row">
-          <span class="sev sev-ok"></span>
-          <span class="incident-name">checkout-service</span>
-          <span class="incident-meta">99.98% uptime</span>
+        <div class="benefit-grid">
+          <article class="benefit">
+            <code>01 / group</code>
+            <h3>Collapse duplicate alerts into a single incident record.</h3>
+            <p>Monitors, logs, deploy markers, and customer-facing symptoms are linked before the team gets paged.</p>
+          </article>
+          <article class="benefit">
+            <code>02 / route</code>
+            <h3>Assign the owner, channel, and runbook immediately.</h3>
+            <p>Service catalog ownership drives escalation, Slack room setup, stakeholder notes, and first responder context.</p>
+          </article>
+          <article class="benefit">
+            <code>03 / report</code>
+            <h3>Keep status pages and postmortems tied to the timeline.</h3>
+            <p>Updates, resolution notes, SLA impact, and postmortem exports all come from the same source of truth.</p>
+          </article>
         </div>
-        <div class="incident-row">
-          <span class="sev sev-ok"></span>
-          <span class="incident-name">auth-cluster</span>
-          <span class="incident-meta">resolved · 4m ago</span>
+      </div>
+    </section>
+
+    <section class="band" id="pricing">
+      <div class="wrap">
+        <div class="section-head center">
+          <div class="eyebrow">Pricing</div>
+          <h2>Start with the services that wake people up.</h2>
+          <p>Each plan includes unlimited incidents, timeline exports, status drafts, and a 14-day trial.</p>
+        </div>
+        <div class="pricing-board">
+          <div class="plan-row">
+            <div>
+              <h3>Launch</h3>
+              <p>10 services, uptime checks, Slack alerts, one public status page.</p>
+            </div>
+            <span class="plan-tag">2 responders</span>
+            <span class="price">$29</span>
+          </div>
+          <div class="plan-row">
+            <div>
+              <h3>Operate</h3>
+              <p>Deploy markers, service ownership, runbooks, routing policies, SLA reports.</p>
+            </div>
+            <span class="plan-tag">15 responders</span>
+            <span class="price">$99</span>
+          </div>
+          <div class="plan-row">
+            <div>
+              <h3>Scale</h3>
+              <p>SSO, audit trails, multi-region checks, private pages, priority support.</p>
+            </div>
+            <span class="plan-tag">Unlimited</span>
+            <span class="price">$249</span>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="integrations">
-  <div class="wrap integrations-row">
-    <span class="integrations-label">Works with the stack you already run</span>
-    <div class="integrations-marks">
-      <span class="tool-chip">Slack</span>
-      <span class="tool-chip">PagerDuty</span>
-      <span class="tool-chip">AWS</span>
-      <span class="tool-chip">Kubernetes</span>
-      <span class="tool-chip">Datadog</span>
-      <span class="tool-chip">GitHub</span>
-    </div>
-  </div>
-</section>
-
-<section class="benefits" id="benefits">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-tag">Why teams switch</div>
-      <h2>Monitoring that catches problems, not just metrics</h2>
-      <p>Built for teams who are tired of noisy dashboards and missed pages.</p>
-    </div>
-
-    <div class="benefit-grid">
-      <div class="benefit-card">
-        <span class="benefit-index">01</span>
-        <div class="benefit-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+    <section class="cta" id="contact">
+      <div class="wrap cta-grid">
+        <div>
+          <h2>Practice the next incident before it is real.</h2>
+          <p>Connect one production service, run a test incident, and see how BeaconOps builds the room, timeline, owner route, and status draft.</p>
         </div>
-        <h3>Real-time detection</h3>
-        <p>Checks run every 30 seconds from multiple regions, so you catch degradation before it becomes downtime.</p>
+        <a class="button primary" href="mailto:sales@beaconops.example">Book a drill</a>
       </div>
-      <div class="benefit-card">
-        <span class="benefit-index">02</span>
-        <div class="benefit-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
-        </div>
-        <h3>Alerts that reach a human</h3>
-        <p>Smart on-call routing across Slack, SMS, and phone calls, with escalation if the first alert goes unanswered.</p>
-      </div>
-      <div class="benefit-card">
-        <span class="benefit-index">03</span>
-        <div class="benefit-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3-3L7 13.7"/></svg>
-        </div>
-        <h3>Status pages that build trust</h3>
-        <p>Public status pages update automatically during incidents, so customers get answers without opening a ticket.</p>
-      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>BeaconOps</span>
+      <span>&copy; 2026 BeaconOps. Incident monitoring for teams that ship under load.</span>
     </div>
-  </div>
-</section>
-
-<section class="pricing" id="pricing">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-tag">Pricing</div>
-      <h2>Straightforward plans, no per-seat surprises</h2>
-      <p>Start free, upgrade when you have more to watch.</p>
-    </div>
-
-    <div class="pricing-strip">
-      <div class="price-col">
-        <div class="price-name">Starter</div>
-        <div class="price-amount">$0<span>/mo</span></div>
-        <p class="price-desc">For small projects and side services.</p>
-        <ul class="price-list">
-          <li>5 monitors</li>
-          <li>1-minute check interval</li>
-          <li>Email alerts</li>
-        </ul>
-        <a href="#" class="btn btn-ghost">Get started</a>
-      </div>
-
-      <div class="price-col featured">
-        <span class="featured-tag">Most popular</span>
-        <div class="price-name">Team</div>
-        <div class="price-amount">$29<span>/mo</span></div>
-        <p class="price-desc">For growing teams running production services.</p>
-        <ul class="price-list">
-          <li>50 monitors</li>
-          <li>30-second check interval</li>
-          <li>Slack, SMS &amp; phone alerts</li>
-          <li>Public status page</li>
-        </ul>
-        <a href="#" class="btn btn-primary">Start free trial</a>
-      </div>
-
-      <div class="price-col">
-        <div class="price-name">Scale</div>
-        <div class="price-amount">$99<span>/mo</span></div>
-        <p class="price-desc">For teams that need depth and control.</p>
-        <ul class="price-list">
-          <li>Unlimited monitors</li>
-          <li>Custom escalation policies</li>
-          <li>Audit logs &amp; SSO</li>
-        </ul>
-        <a href="#" class="btn btn-ghost">Contact sales</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="cta" id="cta">
-  <div class="wrap">
-    <h2>Stop finding out about outages from your customers.</h2>
-    <p>Set up your first monitor in under 5 minutes.</p>
-    <div class="cta-actions">
-      <a href="#" class="btn btn-primary">Start monitoring free</a>
-      <a href="#" class="btn btn-ghost">Book a demo</a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap footer-row">
-    <span>© 2026 BeaconOps</span>
-    <div class="footer-links">
-      <a href="#">Status</a>
-      <a href="#">Docs</a>
-      <a href="#">Contact</a>
-    </div>
-  </div>
-</footer>
-
+  </footer>
 </body>
 </html>
