@@ -3,6 +3,9 @@
 Give your coding agent some design taste. Humanize your UI with proven 
 components.
 
+> **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
+> usage** while building humanize-ui.
+
 Insert here: A sample homepage before and after humanize-ui.
 
 ## How it works
@@ -26,4 +29,4 @@ npx skills add umitkaanusta/humanize-ui
 **Via GitHub**
 ```bash
 git clone https://github.com/umitkaanusta/humanize-ui.git
-``
+```
