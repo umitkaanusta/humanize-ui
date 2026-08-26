@@ -6,7 +6,11 @@ components.
 > **[Winglet](https://agentwinglet.com)** helped **cut 43% of my token
 > usage** while building humanize-ui.
 
-![Before and after humanize-ui, same prompt](examples/beaconops/hero-before-after.png)
+**Without `humanize-ui`**
+![BeaconOps landing page hero, without humanize-ui](examples/beaconops/before.png)
+
+**With `humanize-ui`**
+![BeaconOps landing page hero, made with humanize-ui](examples/beaconops/after.png)
 
 For full page and prompts:
 

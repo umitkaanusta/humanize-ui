@@ -32,6 +32,11 @@
   }
   a{ color: inherit; text-decoration: none; }
   img{ max-width: 100%; display:block; }
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 
   .wrap{
     max-width: 1120px;
@@ -97,12 +102,25 @@
   .hero{
     padding: 96px 0 88px;
     border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before{
+    content: "";
+    position: absolute;
+    top: -140px;
+    right: -100px;
+    width: 680px;
+    height: 680px;
+    background: radial-gradient(circle, rgba(242,163,60,0.10), transparent 70%);
+    pointer-events: none;
   }
   .hero-grid{
     display: grid;
     grid-template-columns: 1.05fr 0.95fr;
     gap: 56px;
     align-items: center;
+    position: relative;
   }
   .eyebrow{
     display: inline-flex;
@@ -121,6 +139,8 @@
   .eyebrow .dot{
     width: 6px; height: 6px; border-radius: 50%;
     background: var(--green);
+    box-shadow: 0 0 0 0 rgba(62,207,142,0.5);
+    animation: livepulse 1.8s ease-out infinite;
   }
   h1{
     font-size: clamp(34px, 4.4vw, 52px);
@@ -145,6 +165,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     padding: 12px 22px;
     border-radius: 8px;
     font-size: 14.5px;
@@ -157,15 +178,35 @@
     color: #1a1200;
   }
   .btn-primary:hover{ opacity: 0.9; }
+  .btn-arrow{
+    width: 14px; height: 14px;
+    transition: transform 0.18s ease;
+  }
+  .btn-primary:hover .btn-arrow{ transform: translateX(3px); }
   .btn-ghost{
     border: 1px solid var(--line);
     color: var(--text);
   }
   .btn-ghost:hover{ border-color: #333a43; }
-  .hero-note{
-    margin-top: 16px;
+  .hero-trust{
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
     font-size: 13px;
     color: var(--text-faint);
+  }
+  .hero-trust li{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero-trust svg{
+    width: 13px; height: 13px;
+    color: var(--green);
+    flex-shrink: 0;
   }
 
   /* mock incident panel */
@@ -186,10 +227,26 @@
     font-size: 12px;
     color: var(--text-dim);
   }
-  .panel-dots{ display:flex; gap:6px; }
-  .panel-dots span{
-    width:8px; height:8px; border-radius:50%;
-    background: #2a2f36;
+  .live-badge{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+  .live-dot{
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 0 rgba(62,207,142,0.5);
+    animation: livepulse 1.8s ease-out infinite;
+  }
+  @keyframes livepulse{
+    0%   { box-shadow: 0 0 0 0 rgba(62,207,142,0.45); }
+    70%  { box-shadow: 0 0 0 6px rgba(62,207,142,0); }
+    100% { box-shadow: 0 0 0 0 rgba(62,207,142,0); }
   }
   .panel-body{ padding: 6px 0; }
   .incident-row{
@@ -201,6 +258,11 @@
     font-size: 13px;
   }
   .incident-row:last-child{ border-bottom: none; }
+  .incident-row.is-flash{ animation: rowflash 2.6s ease-in-out infinite; }
+  @keyframes rowflash{
+    0%, 100% { background: transparent; }
+    50%      { background: rgba(229,72,77,0.07); }
+  }
   .sev{
     width: 7px; height: 7px; border-radius: 50%;
     flex-shrink: 0;
@@ -222,6 +284,41 @@
     border: 1px solid var(--line);
     color: var(--text-dim);
   }
+
+  /* ---------- integrations ---------- */
+  .integrations{
+    padding: 36px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .integrations-row{
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .integrations-label{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+  .integrations-marks{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .tool-chip{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    padding: 6px 12px;
+    border-radius: 7px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .tool-chip:hover{ color: var(--text); border-color: #333a43; }
 
   /* ---------- benefits ---------- */
   .benefits{
@@ -263,9 +360,29 @@
   .benefit-card{
     background: var(--bg);
     padding: 32px 28px;
+    position: relative;
     transition: background 0.18s ease;
   }
+  .benefit-card::before{
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.22s ease;
+  }
   .benefit-card:hover{ background: var(--bg-raised); }
+  .benefit-card:hover::before{ transform: scaleX(1); }
+  .benefit-index{
+    position: absolute;
+    top: 30px;
+    right: 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
   .benefit-icon{
     width: 34px;
     height: 34px;
@@ -276,6 +393,11 @@
     margin-bottom: 20px;
     border: 1px solid var(--line);
     background: var(--bg-raised);
+    transition: background 0.18s ease, border-color 0.18s ease;
+  }
+  .benefit-card:hover .benefit-icon{
+    background: rgba(242,163,60,0.08);
+    border-color: rgba(242,163,60,0.35);
   }
   .benefit-icon svg{ width: 17px; height: 17px; }
   .benefit-card h3{
@@ -306,9 +428,14 @@
     padding: 30px 26px;
     border-right: 1px solid var(--line);
     position: relative;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
+  .price-col:hover{ transform: translateY(-2px); }
   .price-col:last-child{ border-right: none; }
-  .price-col.featured{ background: var(--bg-raised); }
+  .price-col.featured{
+    background: var(--bg-raised);
+    box-shadow: 0 0 0 1px rgba(242,163,60,0.18) inset;
+  }
   .featured-tag{
     position: absolute;
     top: 18px;
@@ -420,11 +547,17 @@
     }
     .price-col:last-child{ border-bottom: none; }
     .nav-links{ display: none; }
+    .integrations-row{ flex-direction: column; align-items: flex-start; gap: 14px; }
   }
 
   @media (max-width: 480px){
     .hero-actions, .cta-actions{ flex-direction: column; align-items: stretch; }
     .footer-row{ flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .beacon-dot, .live-dot, .eyebrow .dot{ animation: none; }
+    .incident-row.is-flash{ animation: none; }
   }
 </style>
 </head>
@@ -452,19 +585,26 @@
       <h1>Know about the outage <span class="accent">before your customers do.</span></h1>
       <p class="hero-sub">BeaconOps watches your services, APIs, and infrastructure around the clock, and pages the right person the moment something breaks — not after it's a fire.</p>
       <div class="hero-actions">
-        <a href="#cta" class="btn btn-primary">Start monitoring free</a>
+        <a href="#cta" class="btn btn-primary">
+          Start monitoring free
+          <svg class="btn-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
         <a href="#benefits" class="btn btn-ghost">See how it works</a>
       </div>
-      <div class="hero-note">No credit card required · 5-minute setup · Cancel anytime</div>
+      <ul class="hero-trust">
+        <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5L16 6"/></svg>No credit card required</li>
+        <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5L16 6"/></svg>5-minute setup</li>
+        <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l3.5 3.5L16 6"/></svg>Cancel anytime</li>
+      </ul>
     </div>
 
     <div class="panel">
       <div class="panel-head">
         <span>live_incidents.log</span>
-        <div class="panel-dots"><span></span><span></span><span></span></div>
+        <div class="live-badge"><span class="live-dot"></span>Live</div>
       </div>
       <div class="panel-body">
-        <div class="incident-row">
+        <div class="incident-row is-flash">
           <span class="sev sev-crit"></span>
           <span class="incident-name">payments-api latency spike</span>
           <span class="incident-status">paged</span>
@@ -489,6 +629,20 @@
   </div>
 </section>
 
+<section class="integrations">
+  <div class="wrap integrations-row">
+    <span class="integrations-label">Works with the stack you already run</span>
+    <div class="integrations-marks">
+      <span class="tool-chip">Slack</span>
+      <span class="tool-chip">PagerDuty</span>
+      <span class="tool-chip">AWS</span>
+      <span class="tool-chip">Kubernetes</span>
+      <span class="tool-chip">Datadog</span>
+      <span class="tool-chip">GitHub</span>
+    </div>
+  </div>
+</section>
+
 <section class="benefits" id="benefits">
   <div class="wrap">
     <div class="section-head">
@@ -499,6 +653,7 @@
 
     <div class="benefit-grid">
       <div class="benefit-card">
+        <span class="benefit-index">01</span>
         <div class="benefit-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
         </div>
@@ -506,6 +661,7 @@
         <p>Checks run every 30 seconds from multiple regions, so you catch degradation before it becomes downtime.</p>
       </div>
       <div class="benefit-card">
+        <span class="benefit-index">02</span>
         <div class="benefit-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
         </div>
@@ -513,6 +669,7 @@
         <p>Smart on-call routing across Slack, SMS, and phone calls, with escalation if the first alert goes unanswered.</p>
       </div>
       <div class="benefit-card">
+        <span class="benefit-index">03</span>
         <div class="benefit-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#f2a33c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3-3L7 13.7"/></svg>
         </div>
