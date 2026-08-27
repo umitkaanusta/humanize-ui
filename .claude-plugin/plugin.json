@@ -1,0 +1,24 @@
+{
+  "name": "humanize-ui",
+  "description": "Give your coding agent design taste. Inspects the existing frontend, commits to a project-specific design direction, scouts curated human-designed component sources (Beautiful UI, beUI, Rare UI, Transitions.dev, shadcn/ui), evaluates fit and dependency cost, and adapts the best-fitting pieces into the app's own design language instead of pasting a theme over it. Ships a catalog of committed design briefs, concrete motion defaults, and an anti-slop audit run against a real render.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ümit Kaan Usta",
+    "url": "https://github.com/umitkaanusta"
+  },
+  "homepage": "https://github.com/umitkaanusta/humanize-ui",
+  "repository": "https://github.com/umitkaanusta/humanize-ui",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "design-taste",
+    "ui",
+    "ux",
+    "frontend",
+    "components",
+    "design-review",
+    "shadcn",
+    "tailwind",
+    "react"
+  ]
+}
