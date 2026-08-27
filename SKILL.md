@@ -46,16 +46,20 @@ you are making and proceed.
    - Make four explicit choices before generating UI: reference
      direction, color decision, type decision, and layout intent.
    - If the product already has brand or design tokens, use those
-     choices. If it does not, choose a specific direction that fits the
-     brief and say it plainly: utilitarian operational tool,
-     editorial commerce, dense technical console, local service shop,
-     consumer wellness app, and so on. Avoid empty directions like
-     "modern and clean."
+     choices. If it does not, pick the closest archetype in
+     `references/design-briefs.md` and adapt it to the product's
+     audience and workflow. State the direction plainly and commit to
+     one; avoid empty directions like "modern and clean" and do not
+     blend two briefs.
    - The layout should come from the user's real workflow, not from a
      default page skeleton. For example, incident software should
      foreground alert routing, service ownership, timelines, status
      updates, or monitoring context; a local repair shop should
      foreground booking, service menu, location, turnaround, and trust.
+   - Litmus test before building: a user arriving on this screen should
+     land inside their real task. If the screen mainly signals "this is
+     a nicely designed page," the direction is still generic and should
+     be redone around the workflow.
 
 4. Use a small visual vocabulary.
    - Pick one or two strong visual motifs and execute them consistently
@@ -98,10 +102,14 @@ you are making and proceed.
      from another library.
 
 8. Polish and verify.
+   - Render the result and review the actual screenshot at desktop and
+     mobile widths. Verify against the render, not from the code alone.
    - Check hierarchy, spacing, density, alignment, hover/focus/active
      states, keyboard behavior, reduced-motion behavior, mobile
      layout, empty/loading/error states, and accessibility.
-   - Audit for AI-built visual tells before finishing: untouched
+   - Audit for AI-built visual tells before finishing; treat this as a
+     hard gate, not a soft preference. Any tell the product did not
+     explicitly ask for gets fixed, not shipped. Untouched
      shadcn or Tailwind defaults, purple or blue gradient defaults,
      gradient hero text, unprompted neon glow, emoji-as-icons,
      excessive pill rounding, generic Inter or Geist by reflex,
@@ -167,10 +175,39 @@ the task, and keep any new suggestions rare and high-quality.
   three-card template.
 - Favor coherence over flair. A quiet, well-integrated component is
   usually better than a flashy imported one.
+- Apply any decorative treatment (grain, noise, gradient, blur, a
+  distinctive border or shadow style) across the whole surface or not
+  at all. One textured card on an otherwise flat page reads as a bug,
+  not a highlight.
+- Use realistic content and representative data in data-heavy modules.
+  Charts, figures, and proportions should be computed from real
+  numbers, not approximated into decorative shapes, and never invent
+  metrics that imply a precision the product does not have.
 - Respect licenses, provenance, and attribution requirements for
   copied code.
 - Before adding packages or running install commands, understand the
   dependency impact and follow the user's approval model.
+
+## Motion
+
+The resting state is the design. Motion only controls how elements
+arrive and how they respond, and every animated element must end in
+its correct static position and stay usable if the animation is
+skipped.
+
+- Animate `transform` and `opacity`. Avoid animating layout
+  properties (width, height, top, margin) that force reflow.
+- UI micro-transitions such as hover, open/close, and enter run
+  roughly 120-240ms. Reserve slower motion for large surfaces like
+  route changes.
+- Use one easing curve for most transitions rather than a different
+  feel per component. A decisive ease-out such as
+  `cubic-bezier(.2, .8, .2, 1)` is a safe default.
+- Stagger siblings by 40-120ms for sequence. Comparable elements
+  (list rows, bars, cards in a set) share identical duration and
+  easing; vary only the delay, never the speed.
+- Honor `prefers-reduced-motion`: drop movement and long fades, keep
+  instant state changes.
 
 ## Examples
 
