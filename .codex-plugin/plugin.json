@@ -1,0 +1,43 @@
+{
+  "name": "humanize-ui",
+  "description": "Give your coding agent design taste. Inspects the existing frontend, commits to a project-specific design direction, scouts curated human-designed component sources (Beautiful UI, beUI, Rare UI, Transitions.dev, shadcn/ui), evaluates fit and dependency cost, and adapts the best-fitting pieces into the app's own design language instead of pasting a theme over it. Ships a catalog of committed design briefs, concrete motion defaults, and an anti-slop audit run against a real render.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ümit Kaan Usta",
+    "url": "https://github.com/umitkaanusta"
+  },
+  "homepage": "https://github.com/umitkaanusta/humanize-ui",
+  "repository": "https://github.com/umitkaanusta/humanize-ui",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "design-taste",
+    "ui",
+    "ux",
+    "frontend",
+    "components",
+    "design-review",
+    "shadcn",
+    "tailwind",
+    "react"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "humanize-ui",
+    "shortDescription": "Give your coding agent design taste — adapt proven human-designed components into your app's own language.",
+    "longDescription": "Use this skill when improving or building frontend UI where the result should feel more polished than a generic AI-generated interface. It inspects the existing frontend first, makes deliberate project-specific design choices second, scouts strong human-designed references third, then adapts the best-fitting pieces into the existing frontend foundation. Treats component libraries like LEGO, not like a theme to paste over the app. Ships a catalog of committed design briefs for when no brand direction exists, concrete motion defaults, and an anti-slop audit run against a real render.",
+    "developerName": "Ümit Kaan Usta",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/umitkaanusta/humanize-ui",
+    "defaultPrompt": [
+      "Use humanize-ui on the pricing page. Keep the current brand, verify desktop and mobile.",
+      "Use humanize-ui to add a command palette that matches our stack and accessibility needs.",
+      "Use humanize-ui on the dashboard — tighten hierarchy, density, and empty states."
+    ],
+    "brandColor": "#111111"
+  }
+}

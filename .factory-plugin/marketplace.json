@@ -1,0 +1,9 @@
+{
+  "name": "humanize-ui",
+  "plugins": [
+    {
+      "name": "humanize-ui",
+      "source": "./"
+    }
+  ]
+}

@@ -10,5 +10,5 @@
     "MD033": false,
     "MD041": false
   },
-  "globs": ["README.md", "SKILL.md"]
+  "globs": ["README.md", "skills/humanize-ui/SKILL.md"]
 }

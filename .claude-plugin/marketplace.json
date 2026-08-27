@@ -1,0 +1,15 @@
+{
+  "name": "humanize-ui",
+  "metadata": {
+    "description": "Give your coding agent design taste — humanize your UI with proven components."
+  },
+  "owner": {
+    "name": "Ümit Kaan Usta"
+  },
+  "plugins": [
+    {
+      "name": "humanize-ui",
+      "source": "./"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ name: humanize-ui
 description:
   Give your coding agent some design taste. Humanize your UI with proven 
   components.
+license: MIT
 ---
 
 # humanize-ui

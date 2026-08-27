@@ -31,24 +31,35 @@ For full page and prompts:
 
 ## Install
 
-**Via [skills.sh](https://www.skills.sh) (recommended):**  detects your agent and
-links the skill in automatically:
+**As a plugin (Claude Code):** the repo doubles as its own
+single-plugin marketplace.
+
+```text
+/plugin marketplace add umitkaanusta/humanize-ui
+/plugin install humanize-ui@humanize-ui
+```
+
+Codex and Factory read `.codex-plugin/` and `.factory-plugin/` from
+the same repo; generic agents read `.agents/plugins/`.
+
+**Via [skills.sh](https://www.skills.sh):** detects your agent and
+links the skill in automatically.
 
 ```bash
 npx skills add umitkaanusta/humanize-ui
 ```
 
-**Via GitHub** clone it, then copy `SKILL.md` into your agent's
-skill directory
+**Manually:** clone it, then copy the skill folder into your agent's
+skill directory.
 
 ```bash
 git clone https://github.com/umitkaanusta/humanize-ui.git
 mkdir -p .claude/skills/humanize-ui
-cp humanize-ui/SKILL.md .claude/skills/humanize-ui/
+cp -r humanize-ui/skills/humanize-ui/. .claude/skills/humanize-ui/
 ```
 
-The example shows `.claude`. Use `.cursor` for Cursor, and `.agents` for Codex
-and other tools.
+The example shows `.claude`. Use `.cursor` for Cursor, and `.agents`
+for Codex and other tools.
 
 ## How to use
 
