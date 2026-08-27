@@ -39,6 +39,14 @@ single-plugin marketplace.
 /plugin install humanize-ui@humanize-ui
 ```
 
+**As a plugin (Codex):** add the repo as a marketplace, then install
+the plugin from it.
+
+```bash
+codex plugin marketplace add umitkaanusta/humanize-ui
+codex plugin add humanize-ui@humanize-ui
+```
+
 Codex and Factory read `.codex-plugin/` and `.factory-plugin/` from
 the same repo; generic agents read `.agents/plugins/`.
 
