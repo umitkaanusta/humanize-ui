@@ -4,8 +4,10 @@ These examples use the same brief to compare a typical generated dashboard
 against one made with the `humanize-ui` skill.
 
 **With `humanize-ui`**
+![Portfolio dashboard with humanize-ui](after.png)
 
 **Without `humanize-ui`**
+![Portfolio dashboard without humanize-ui](before.png)
 
 ## Prompt Without `humanize-ui`
 

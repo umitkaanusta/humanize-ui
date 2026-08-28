@@ -9,14 +9,26 @@ Humanize your UI with proven components.
 
 </div>
 
+## Examples
+
+### Mintly: retail investing dashboard
+
+**With `humanize-ui`**
+![Mintly portfolio dashboard, made with humanize-ui](examples/mintly/after.png)
+
+**Without `humanize-ui`**
+![Mintly portfolio dashboard, without humanize-ui](examples/mintly/before.png)
+
+### BeaconOps: incident monitoring landing page
+
 **With `humanize-ui`**
 ![BeaconOps landing page hero, made with humanize-ui](examples/beaconops/after.png)
 
 **Without `humanize-ui`**
 ![BeaconOps landing page hero, without humanize-ui](examples/beaconops/before.png)
 
-For full page and prompts:
-
+For full pages and prompts:
+- [Mintly, fictional retail investing app](examples/mintly)
 - [BeaconOps, fictional incident monitoring software](examples/beaconops)
 
 ## How it works
