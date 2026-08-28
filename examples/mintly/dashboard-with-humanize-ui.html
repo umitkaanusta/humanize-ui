@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mintly — Portfolio Report</title>
+  <style>
+    :root {
+      --paper: #faf3e3;
+      --paper-inset: #f3e9d2;
+      --ink: #2b2723;
+      --ink-soft: #605a4f;
+      --rule: #ddd0b4;
+      --rule-strong: #2b2723;
+      --accent: #0f7a73;
+      --gain: #1f6f4a;
+      --loss: #a23a2c;
+
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+      --measure: min(1180px, calc(100% - 48px));
+    }
+
+    * { box-sizing: border-box; }
+
+    html { color-scheme: light; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      font-variant-numeric: tabular-nums;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    button { font: inherit; cursor: pointer; }
+
+    a { color: var(--accent); text-decoration: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .num { font-variant-numeric: tabular-nums; }
+    .gain { color: var(--gain); }
+    .loss { color: var(--loss); }
+
+    .kicker {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .paper {
+      width: var(--measure);
+      margin: 0 auto;
+      padding-bottom: 0;
+    }
+
+    /* ---------- Masthead ---------- */
+    .masthead {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 26px 0 12px;
+      border-bottom: 2px solid var(--rule-strong);
+    }
+
+    .wordmark {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .wordmark small {
+      display: block;
+      margin-top: 8px;
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .masthead-meta {
+      text-align: right;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      line-height: 1.9;
+      white-space: nowrap;
+    }
+
+    .masthead-meta b {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    /* ---------- Section nav ---------- */
+    .sections {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: 11px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .sections::-webkit-scrollbar { display: none; }
+
+    .sections a {
+      color: var(--ink-soft);
+      white-space: nowrap;
+      padding-bottom: 2px;
+      transition: color 0.14s ease;
+    }
+
+    .sections a:hover { color: var(--ink); }
+
+    .sections a.active {
+      color: var(--ink);
+      font-weight: 700;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .sections .spacer { flex: 1; }
+
+    .sections .edition {
+      color: var(--ink-soft);
+      letter-spacing: 0.1em;
+    }
+
+    /* ---------- Lead ---------- */
+    .lead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 44px;
+      align-items: flex-end;
+      padding: 30px 0 26px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .lead-kicker {
+      margin-bottom: 12px;
+    }
+
+    .portfolio-value {
+      font-family: var(--serif);
+      font-size: clamp(44px, 8vw, 72px);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+    }
+
+    .delta {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .delta::before {
+      content: "";
+      display: inline-block;
+      width: 0;
+      height: 0;
+      margin-right: 8px;
+      border: 5px solid transparent;
+    }
+
+    .delta.up { color: var(--gain); }
+    .delta.up::before {
+      border-bottom-color: currentColor;
+      border-top-width: 0;
+      transform: translateY(-1px);
+    }
+
+    .delta.down { color: var(--loss); }
+    .delta.down::before {
+      border-top-color: currentColor;
+      border-bottom-width: 0;
+      transform: translateY(1px);
+    }
+
+    .delta .since {
+      margin-left: 8px;
+      font-weight: 500;
+      color: var(--ink-soft);
+    }
+
+    .lead-side {
+      display: grid;
+      gap: 0;
+      min-width: 220px;
+    }
+
+    .fact {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 9px 0;
+      font-size: 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .fact:first-child { border-top: 1px solid var(--rule); }
+
+    .fact dt {
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 10.5px;
+      align-self: center;
+    }
+
+    .fact dd {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .btn {
+      margin-top: 16px;
+      justify-self: start;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      padding: 10px 18px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.14s ease, color 0.14s ease;
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    /* ---------- Report grid ---------- */
+    .report-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 304px;
+      gap: 0;
+    }
+
+    .report-main {
+      min-width: 0;
+      padding: 4px 40px 0 0;
+    }
+
+    .report-rail {
+      min-width: 0;
+      padding: 4px 0 0 40px;
+      border-left: 1px solid var(--rule);
+    }
+
+    .block {
+      padding: 26px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .report-main .block:last-child,
+    .report-rail .block:last-child { border-bottom: 0; }
+
+    .block-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 9px;
+      margin-bottom: 18px;
+      border-bottom: 2px solid var(--rule-strong);
+    }
+
+    .block-head h2 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .block-head .sub {
+      font-size: 11px;
+      color: var(--ink-soft);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .link-more {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 1px;
+      white-space: nowrap;
+      transition: color 0.14s ease;
+    }
+
+    .link-more:hover { color: var(--ink); }
+
+    /* ---------- Chart ---------- */
+    .chart-toolbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .chart-toolbar h3 {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .chart-caption {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .periods {
+      display: inline-flex;
+      flex-shrink: 0;
+    }
+
+    .period-btn {
+      border: 0;
+      background: none;
+      color: var(--ink-soft);
+      padding: 4px 0;
+      margin-left: 18px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 2px solid transparent;
+      transition: color 0.14s ease;
+    }
+
+    .period-btn:first-child { margin-left: 0; }
+    .period-btn:hover { color: var(--ink); }
+
+    .period-btn.active {
+      color: var(--ink);
+      font-weight: 700;
+      border-bottom-color: var(--ink);
+    }
+
+    .chart-plot {
+      position: relative;
+      height: 300px;
+      margin: 4px 0 8px;
+      padding-left: 50px;
+    }
+
+    .gridline {
+      position: absolute;
+      left: 50px;
+      right: 0;
+      border-top: 1px dotted var(--rule);
+    }
+
+    .gridline.base { border-top: 1px solid var(--rule); }
+
+    .ylabel {
+      position: absolute;
+      left: 0;
+      width: 44px;
+      text-align: right;
+      transform: translateY(-50%);
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chart-plot svg {
+      position: absolute;
+      inset: 0 0 0 50px;
+      width: calc(100% - 50px);
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .chart-line {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+      transition: opacity 0.18s ease;
+    }
+
+    .chart-area { fill: url(#mintlyArea); }
+
+    .latest-dot {
+      fill: var(--paper);
+      stroke: var(--accent);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .xaxis {
+      display: flex;
+      justify-content: space-between;
+      margin-left: 50px;
+      padding-top: 8px;
+      border-top: 1px solid var(--rule);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .chart-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 18px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .chart-summary div {
+      padding: 12px 16px 0 0;
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .chart-summary div + div {
+      padding-left: 16px;
+      border-left: 1px solid var(--rule);
+    }
+
+    .chart-summary strong {
+      display: block;
+      margin-top: 5px;
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--ink);
+    }
+
+    /* ---------- By the numbers ---------- */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat { padding-right: 18px; }
+
+    .stat + .stat {
+      padding-left: 18px;
+      border-left: 1px solid var(--rule);
+    }
+
+    .stat-label {
+      font-size: 10.5px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .stat-sub {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+
+    /* ---------- Holdings table ---------- */
+    .table-scroll { min-width: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .holdings {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .holdings th {
+      padding: 0 0 9px;
+      text-align: right;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      border-bottom: 1.5px solid var(--rule-strong);
+    }
+
+    .holdings td {
+      padding: 13px 0;
+      text-align: right;
+      font-size: 13px;
+      border-bottom: 1px solid var(--rule);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .holdings tr:last-child td { border-bottom: 0; }
+
+    .holdings th:first-child,
+    .holdings td:first-child { text-align: left; padding-right: 16px; }
+
+    .holdings th:not(:first-child),
+    .holdings td:not(:first-child) { padding-left: 14px; }
+
+    .asset {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 190px;
+    }
+
+    .ticker-mark {
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--rule-strong);
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .asset .name {
+      font-family: var(--serif);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .asset .meta {
+      display: block;
+      margin-top: 2px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      letter-spacing: 0.02em;
+    }
+
+    .alloc-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      justify-content: flex-end;
+    }
+
+    .alloc-track {
+      width: 46px;
+      height: 4px;
+      background: var(--rule);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .alloc-track > span {
+      display: block;
+      height: 100%;
+      background: var(--ink);
+    }
+
+    /* ---------- Rail: allocation ---------- */
+    .alloc-row {
+      padding: 11px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .alloc-row:last-of-type { border-bottom: 0; }
+
+    .alloc-row .line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .alloc-row .line b { font-weight: 700; }
+    .alloc-row .line .pct { color: var(--ink-soft); font-weight: 700; }
+
+    .alloc-bar {
+      height: 3px;
+      background: var(--rule);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .alloc-bar > span {
+      display: block;
+      height: 100%;
+      background: var(--ink);
+    }
+
+    .note {
+      margin-top: 18px;
+      border-left: 2px solid var(--ink);
+      padding: 2px 0 2px 14px;
+      font-family: var(--serif);
+      font-size: 13px;
+      font-style: italic;
+      line-height: 1.55;
+    }
+
+    .note b {
+      display: block;
+      margin-bottom: 5px;
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    /* ---------- Rail: activity ---------- */
+    .activity {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .activity:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    .activity .what { font-size: 13px; font-weight: 700; }
+
+    .activity .when {
+      grid-column: 1;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .activity .amount {
+      grid-row: 1;
+      grid-column: 2;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .activity .qty {
+      grid-column: 2;
+      text-align: right;
+      font-size: 10px;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---------- Colophon ---------- */
+    .colophon {
+      border-top: 2px solid var(--rule-strong);
+      margin-top: 4px;
+      padding: 20px 0 48px;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+
+    .colophon .mark {
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .colophon p { max-width: 620px; margin: 0 auto; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 940px) {
+      .report-grid { grid-template-columns: 1fr; }
+
+      .report-main { padding-right: 0; }
+
+      .report-rail {
+        padding-left: 0;
+        border-left: 0;
+        border-top: 2px solid var(--rule-strong);
+        margin-top: 8px;
+      }
+
+      .lead {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .lead-side { min-width: 0; }
+    }
+
+    @media (max-width: 620px) {
+      :root { --measure: calc(100% - 32px); }
+
+      .masthead {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .masthead-meta {
+        text-align: left;
+        line-height: 1.8;
+        white-space: normal;
+      }
+
+      .sections .edition { display: none; }
+
+      .portfolio-value { font-size: clamp(40px, 13vw, 56px); }
+
+      .chart-summary { grid-template-columns: 1fr 1fr; }
+
+      .chart-summary div:nth-child(3) {
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .chart-summary div:nth-child(n+3) {
+        margin-top: 12px;
+        border-top: 1px solid var(--rule);
+      }
+
+      .stats { grid-template-columns: 1fr 1fr; row-gap: 20px; }
+
+      .stat:nth-child(3) { padding-left: 0; border-left: 0; }
+
+      .chart-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .periods { flex-wrap: wrap; gap: 4px 0; }
+
+      .block-head { flex-wrap: wrap; }
+
+      .holdings { min-width: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="paper">
+    <header class="masthead">
+      <div class="wordmark">
+        Mintly
+        <small>Personal Investing Report</small>
+      </div>
+      <div class="masthead-meta">
+        Friday, 28 August 2026<br />
+        <b>Markets open</b> · Prices delayed 15 min<br />
+        Account — Alex Morgan · Individual · USD
+      </div>
+    </header>
+
+    <nav class="sections" aria-label="Primary">
+      <a href="#" class="active">Overview</a>
+      <a href="#holdings">Holdings</a>
+      <a href="#">Discover</a>
+      <a href="#activity">Activity</a>
+      <a href="#">Settings</a>
+      <span class="spacer"></span>
+      <span class="edition">Edition No. 1,284</span>
+    </nav>
+
+    <section class="lead">
+      <div>
+        <div class="kicker lead-kicker">Portfolio report — prepared for Alex Morgan</div>
+        <div class="portfolio-value num">$128,460.24</div>
+        <div class="delta up">
+          $1,284.61&nbsp;&nbsp;(+1.01%)
+          <span class="since">today</span>
+        </div>
+      </div>
+
+      <div class="lead-side">
+        <dl style="margin:0;">
+          <div class="fact"><dt>Prev. close</dt><dd class="num">$127,175.63</dd></div>
+          <div class="fact"><dt>Day range</dt><dd class="num">$127.2k – $128.5k</dd></div>
+          <div class="fact"><dt>Net contributions, MTD</dt><dd class="num">$1,500.00</dd></div>
+        </dl>
+        <button class="btn" type="button">Add funds</button>
+      </div>
+    </section>
+
+    <div class="report-grid">
+      <main class="report-main">
+        <section class="block" aria-label="Portfolio performance">
+          <div class="chart-toolbar">
+            <div>
+              <h3 id="periodTitle">One-month performance</h3>
+              <div class="chart-caption" id="periodCaption">+$6,424.80 · +5.26% over this period</div>
+            </div>
+            <div class="periods" role="tablist" aria-label="Chart period">
+              <button class="period-btn" data-period="1D" role="tab">1D</button>
+              <button class="period-btn" data-period="1W" role="tab">1W</button>
+              <button class="period-btn active" data-period="1M" role="tab" aria-selected="true">1M</button>
+              <button class="period-btn" data-period="1Y" role="tab">1Y</button>
+              <button class="period-btn" data-period="ALL" role="tab">All</button>
+            </div>
+          </div>
+
+          <div class="chart-plot">
+            <div class="gridline" style="top:8.7%"></div>
+            <div class="gridline" style="top:36.2%"></div>
+            <div class="gridline" style="top:63.8%"></div>
+            <div class="gridline base" style="top:91.3%"></div>
+            <span class="ylabel" id="y0" style="top:8.7%"></span>
+            <span class="ylabel" id="y1" style="top:36.2%"></span>
+            <span class="ylabel" id="y2" style="top:63.8%"></span>
+            <span class="ylabel" id="y3" style="top:91.3%"></span>
+
+            <svg viewBox="0 0 780 300" preserveAspectRatio="none" role="img" aria-label="Portfolio value over the selected period">
+              <defs>
+                <linearGradient id="mintlyArea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#0f7a73" stop-opacity="0.12"></stop>
+                  <stop offset="100%" stop-color="#0f7a73" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <path id="areaPath" class="chart-area" d=""></path>
+              <polyline id="linePath" class="chart-line" points=""></polyline>
+              <circle id="latestDot" class="latest-dot" cx="0" cy="0" r="3.5"></circle>
+            </svg>
+          </div>
+
+          <div class="xaxis">
+            <span id="xStart">28 Jul</span>
+            <span id="xEnd">28 Aug</span>
+          </div>
+
+          <div class="chart-summary">
+            <div>Period return<strong id="summaryReturn">+5.26%</strong></div>
+            <div>Benchmark · S&amp;P 500<strong id="summaryBenchmark">+3.84%</strong></div>
+            <div>Net contributions<strong id="summaryContribution">$1,500.00</strong></div>
+            <div>Portfolio high<strong id="summaryHigh">$129,022.73</strong></div>
+          </div>
+        </section>
+
+        <section class="block" aria-label="Key statistics">
+          <div class="block-head">
+            <h2>By the numbers</h2>
+            <span class="sub">As of market close estimate</span>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Buying power</div>
+              <div class="stat-value num">$8,920.16</div>
+              <div class="stat-sub">6.9% of portfolio</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Total return</div>
+              <div class="stat-value num gain">+$24,810</div>
+              <div class="stat-sub">+23.94% since inception</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Dividends, YTD</div>
+              <div class="stat-value num">$1,284.20</div>
+              <div class="stat-sub">Est. forward yield 1.8%</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Risk level</div>
+              <div class="stat-value">Moderate</div>
+              <div class="stat-sub">72% equities · 21% ETFs</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="holdings" aria-label="Holdings">
+          <div class="block-head">
+            <h2>Holdings</h2>
+            <a class="link-more" href="#">All 12 positions</a>
+          </div>
+          <div class="table-scroll">
+            <table class="holdings">
+              <thead>
+                <tr>
+                  <th scope="col">Position</th>
+                  <th scope="col">Last</th>
+                  <th scope="col">Today</th>
+                  <th scope="col">Market value</th>
+                  <th scope="col">Weight</th>
+                  <th scope="col">Total return</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="asset">
+                      <span class="ticker-mark" aria-hidden="true">AA</span>
+                      <span><span class="name">Apple</span><span class="meta">AAPL · 18.4 sh</span></span>
+                    </div>
+                  </td>
+                  <td class="num">$214.38</td>
+                  <td class="num gain">+1.24%</td>
+                  <td class="num">$39,442.69</td>
+                  <td>
+                    <span class="alloc-cell"><span class="alloc-track"><span style="width:30.7%"></span></span><span class="num">30.7%</span></span>
+                  </td>
+                  <td class="num gain">+$8,124</td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset">
+                      <span class="ticker-mark" aria-hidden="true">VO</span>
+                      <span><span class="name">Vanguard S&amp;P 500 ETF</span><span class="meta">VOO · 45.2 sh</span></span>
+                    </div>
+                  </td>
+                  <td class="num">$532.14</td>
+                  <td class="num gain">+0.64%</td>
+                  <td class="num">$24,052.73</td>
+                  <td>
+                    <span class="alloc-cell"><span class="alloc-track"><span style="width:18.7%"></span></span><span class="num">18.7%</span></span>
+                  </td>
+                  <td class="num gain">+$4,862</td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset">
+                      <span class="ticker-mark" aria-hidden="true">MS</span>
+                      <span><span class="name">Microsoft</span><span class="meta">MSFT · 42.0 sh</span></span>
+                    </div>
+                  </td>
+                  <td class="num">$454.67</td>
+                  <td class="num loss">−0.32%</td>
+                  <td class="num">$19,096.14</td>
+                  <td>
+                    <span class="alloc-cell"><span class="alloc-track"><span style="width:14.9%"></span></span><span class="num">14.9%</span></span>
+                  </td>
+                  <td class="num gain">+$3,715</td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset">
+                      <span class="ticker-mark" aria-hidden="true">NV</span>
+                      <span><span class="name">NVIDIA</span><span class="meta">NVDA · 109.5 sh</span></span>
+                    </div>
+                  </td>
+                  <td class="num">$136.42</td>
+                  <td class="num gain">+2.88%</td>
+                  <td class="num">$14,938.00</td>
+                  <td>
+                    <span class="alloc-cell"><span class="alloc-track"><span style="width:11.6%"></span></span><span class="num">11.6%</span></span>
+                  </td>
+                  <td class="num gain">+$5,922</td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="asset">
+                      <span class="ticker-mark" aria-hidden="true">BN</span>
+                      <span><span class="name">Vanguard Total Bond ETF</span><span class="meta">BND · 184.0 sh</span></span>
+                    </div>
+                  </td>
+                  <td class="num">$73.68</td>
+                  <td class="num gain">+0.11%</td>
+                  <td class="num">$13,557.12</td>
+                  <td>
+                    <span class="alloc-cell"><span class="alloc-track"><span style="width:10.6%"></span></span><span class="num">10.6%</span></span>
+                  </td>
+                  <td class="num loss">−$214</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <aside class="report-rail">
+        <section class="block" aria-label="Allocation">
+          <div class="block-head">
+            <h2>Allocation</h2>
+            <a class="link-more" href="#">Rebalance</a>
+          </div>
+
+          <div class="alloc-row">
+            <div class="line"><b>US stocks</b><span class="pct num">61.8%</span></div>
+            <div class="alloc-bar"><span style="width:61.8%"></span></div>
+          </div>
+          <div class="alloc-row">
+            <div class="line"><b>ETFs</b><span class="pct num">21.4%</span></div>
+            <div class="alloc-bar"><span style="width:21.4%"></span></div>
+          </div>
+          <div class="alloc-row">
+            <div class="line"><b>Bonds</b><span class="pct num">9.9%</span></div>
+            <div class="alloc-bar"><span style="width:9.9%"></span></div>
+          </div>
+          <div class="alloc-row">
+            <div class="line"><b>Cash</b><span class="pct num">6.9%</span></div>
+            <div class="alloc-bar"><span style="width:6.9%"></span></div>
+          </div>
+
+          <p class="note">
+            <b>Portfolio note</b>
+            Your two largest positions account for 49.4% of invested assets. Concentration at this level raises single-stock risk relative to a moderate target.
+          </p>
+        </section>
+
+        <section class="block" id="activity" aria-label="Recent activity">
+          <div class="block-head">
+            <h2>Recent activity</h2>
+            <a class="link-more" href="#">History</a>
+          </div>
+
+          <div class="activity">
+            <span class="what">Dividend — VOO</span>
+            <span class="amount gain num">+$86.40</span>
+            <span class="when">27 Aug · Reinvested</span>
+            <span class="qty num">0.162 sh</span>
+          </div>
+          <div class="activity">
+            <span class="what">Bought NVDA</span>
+            <span class="amount num">−$1,502.31</span>
+            <span class="when">25 Aug · Market order</span>
+            <span class="qty num">11.1 sh</span>
+          </div>
+          <div class="activity">
+            <span class="what">Bank transfer</span>
+            <span class="amount gain num">+$1,500.00</span>
+            <span class="when">22 Aug · Completed</span>
+            <span class="qty">To cash</span>
+          </div>
+          <div class="activity">
+            <span class="what">Bought VOO</span>
+            <span class="amount num">−$530.72</span>
+            <span class="when">19 Aug · Recurring</span>
+            <span class="qty num">1.0 sh</span>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="colophon">
+      <div class="mark">Mintly</div>
+      <p>Mintly is a fictional product. All values, holdings, and returns shown are illustrative and for demonstration only. Investing involves risk, including the possible loss of principal. Past performance does not guarantee future results.</p>
+    </footer>
+  </div>
+
+  <script>
+    const datasets = {
+      "1D": {
+        values: [127175, 127540, 127390, 127820, 127670, 128020, 127960, 128220, 128460],
+        title: "Today’s performance",
+        caption: "+$1,284.61 · +1.01% today",
+        ret: "+1.01%",
+        bench: "+0.72%",
+        contrib: "$0.00",
+        high: "$128,498.12",
+        xStart: "9:30 ET",
+        xEnd: "4:00 ET"
+      },
+      "1W": {
+        values: [124900, 125420, 124980, 126030, 126540, 127210, 128460],
+        title: "One-week performance",
+        caption: "+$3,560.24 · +2.85% over this period",
+        ret: "+2.85%",
+        bench: "+1.92%",
+        contrib: "$1,500.00",
+        high: "$128,460.24",
+        xStart: "21 Aug",
+        xEnd: "28 Aug"
+      },
+      "1M": {
+        values: [122035, 121860, 122900, 123420, 123120, 124250, 124860, 124490, 125330, 126180, 125760, 126640, 127020, 126720, 127640, 128460],
+        title: "One-month performance",
+        caption: "+$6,424.80 · +5.26% over this period",
+        ret: "+5.26%",
+        bench: "+3.84%",
+        contrib: "$1,500.00",
+        high: "$129,022.73",
+        xStart: "28 Jul",
+        xEnd: "28 Aug"
+      },
+      "1Y": {
+        values: [102600, 104400, 101800, 107600, 109900, 108400, 112700, 116400, 114300, 119500, 121800, 124600, 128460],
+        title: "One-year performance",
+        caption: "+$25,860.24 · +25.21% over this period",
+        ret: "+25.21%",
+        bench: "+18.40%",
+        contrib: "$8,400.00",
+        high: "$129,022.73",
+        xStart: "Aug 2025",
+        xEnd: "Aug 2026"
+      },
+      "ALL": {
+        values: [103650, 101900, 106200, 109400, 108100, 111500, 114900, 116300, 113700, 117900, 121100, 119600, 123700, 126800, 124900, 128460],
+        title: "Since inception",
+        caption: "+$24,810.24 · +23.94% since inception",
+        ret: "+23.94%",
+        bench: "+17.66%",
+        contrib: "$18,250.00",
+        high: "$129,022.73",
+        xStart: "2019",
+        xEnd: "2026"
+      }
+    };
+
+    const line = document.getElementById("linePath");
+    const area = document.getElementById("areaPath");
+    const dot = document.getElementById("latestDot");
+    const yLabels = ["y0", "y1", "y2", "y3"].map(function (id) { return document.getElementById(id); });
+
+    function fmtAxis(v) {
+      return "$" + (v / 1000).toFixed(1) + "k";
+    }
+
+    function renderChart(period) {
+      const data = datasets[period];
+      const values = data.values;
+      const w = 780;
+      const h = 300;
+      const padX = 8;
+      const padY = 26;
+      const min = Math.min.apply(null, values);
+      const max = Math.max.apply(null, values);
+      const spread = Math.max(max - min, 1);
+
+      const points = values.map(function (v, i) {
+        const x = padX + (i / (values.length - 1)) * (w - padX * 2);
+        const y = padY + (1 - (v - min) / spread) * (h - padY * 2);
+        return [x, y];
+      });
+
+      line.setAttribute("points", points.map(function (p) { return p.join(","); }).join(" "));
+      area.setAttribute("d", "M " + points[0][0] + " " + h + " L " +
+        points.map(function (p) { return p.join(" "); }).join(" L ") +
+        " L " + points[points.length - 1][0] + " " + h + " Z");
+      dot.setAttribute("cx", points[points.length - 1][0]);
+      dot.setAttribute("cy", points[points.length - 1][1]);
+
+      yLabels[0].textContent = fmtAxis(max);
+      yLabels[1].textContent = fmtAxis(min + spread * (2 / 3));
+      yLabels[2].textContent = fmtAxis(min + spread * (1 / 3));
+      yLabels[3].textContent = fmtAxis(min);
+
+      document.getElementById("periodTitle").textContent = data.title;
+      document.getElementById("periodCaption").textContent = data.caption;
+      document.getElementById("summaryReturn").textContent = data.ret;
+      document.getElementById("summaryBenchmark").textContent = data.bench;
+      document.getElementById("summaryContribution").textContent = data.contrib;
+      document.getElementById("summaryHigh").textContent = data.high;
+      document.getElementById("xStart").textContent = data.xStart;
+      document.getElementById("xEnd").textContent = data.xEnd;
+    }
+
+    const buttons = Array.prototype.slice.call(document.querySelectorAll(".period-btn"));
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        buttons.forEach(function (b) {
+          b.classList.remove("active");
+          b.removeAttribute("aria-selected");
+        });
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+        renderChart(btn.dataset.period);
+      });
+    });
+
+    renderChart("1M");
+  </script>
+</body>
+</html>
