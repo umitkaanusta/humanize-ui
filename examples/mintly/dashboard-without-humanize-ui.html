@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mintly — Investment Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4f7f5;
+      --surface: #ffffff;
+      --surface-2: #f7faf8;
+      --text: #142019;
+      --muted: #718078;
+      --line: #dfe7e2;
+      --brand: #20b46a;
+      --brand-dark: #14854d;
+      --brand-soft: #e9f8ef;
+      --positive: #11985a;
+      --negative: #cc4b4b;
+      --warning: #a46b00;
+      --shadow: 0 8px 30px rgba(21, 54, 36, 0.06);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: light;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 26px 20px;
+      background: #102219;
+      color: #f4fff8;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #0d2b1b;
+      background: linear-gradient(145deg, #5ee593, #1fc46b);
+      font-weight: 900;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #b7c8bd;
+      padding: 11px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      color: #b7c8bd;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .content {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+      margin-bottom: 4px;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+    }
+
+    .account-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 8px 10px 8px 8px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--brand-soft);
+      color: var(--brand-dark);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .account-chip strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .account-chip span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(280px, 0.85fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 24px;
+    }
+
+    .portfolio-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .portfolio-value {
+      font-size: clamp(36px, 6vw, 56px);
+      line-height: 1;
+      margin: 4px 0 12px;
+      letter-spacing: -0.055em;
+      font-weight: 800;
+    }
+
+    .daily-return {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--positive);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .daily-return span {
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .cash-button {
+      border: 0;
+      border-radius: 12px;
+      background: var(--text);
+      color: #fff;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .chart-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .chart-caption {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .periods {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .period-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .period-btn.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(18, 38, 27, .08);
+    }
+
+    .chart-wrap {
+      position: relative;
+      min-height: 300px;
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        linear-gradient(to bottom, rgba(32,180,106,.08), transparent 60%),
+        repeating-linear-gradient(
+          to bottom,
+          transparent,
+          transparent 59px,
+          #edf2ef 60px
+        );
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      height: 300px;
+      display: block;
+    }
+
+    .chart-grid text {
+      fill: #8a978f;
+      font-size: 11px;
+    }
+
+    .chart-line {
+      fill: none;
+      stroke: var(--brand);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .chart-area {
+      fill: url(#areaGradient);
+    }
+
+    .latest-dot {
+      fill: #fff;
+      stroke: var(--brand);
+      stroke-width: 3;
+    }
+
+    .chart-summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .chart-summary strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .stat-sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .section-card {
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 20px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-header a {
+      color: var(--brand-dark);
+      font-size: 12px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .holdings-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .holdings-table th,
+    .holdings-table td {
+      padding: 14px 20px;
+      text-align: right;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .holdings-table th {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      background: #fbfcfb;
+    }
+
+    .holdings-table th:first-child,
+    .holdings-table td:first-child {
+      text-align: left;
+    }
+
+    .asset {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 180px;
+    }
+
+    .asset-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+
+    .asset strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .asset span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .positive {
+      color: var(--positive);
+      font-weight: 700;
+    }
+
+    .negative {
+      color: var(--negative);
+      font-weight: 700;
+    }
+
+    .allocation {
+      padding: 0 20px 20px;
+    }
+
+    .allocation-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 12px;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .allocation-row + .allocation-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .allocation-name {
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .allocation-value {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .bar {
+      grid-column: 1 / -1;
+      height: 7px;
+      background: #edf2ef;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      background: var(--brand);
+      border-radius: inherit;
+    }
+
+    .activity-list {
+      padding: 0 20px 8px;
+    }
+
+    .activity {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .activity-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--surface-2);
+      color: var(--brand-dark);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .activity strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .activity span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .activity-amount {
+      text-align: right;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .activity-amount small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .insight {
+      margin: 0 20px 20px;
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--brand-soft);
+      color: #24563c;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 1050px) {
+      .shell {
+        grid-template-columns: 88px minmax(0, 1fr);
+      }
+
+      .sidebar {
+        align-items: center;
+        padding-inline: 14px;
+      }
+
+      .brand span:last-child,
+      .nav a span,
+      .sidebar-foot {
+        display: none;
+      }
+
+      .nav a {
+        width: 48px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        font-size: 0;
+      }
+
+      .nav a::first-letter {
+        font-size: 16px;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .right-column {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding-bottom: 72px;
+      }
+
+      .shell {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .content {
+        padding: 18px 14px 22px;
+      }
+
+      .topbar {
+        margin-bottom: 18px;
+      }
+
+      .account-chip strong,
+      .account-chip span {
+        display: none;
+      }
+
+      .account-chip {
+        padding: 6px;
+      }
+
+      .hero-card {
+        padding: 18px;
+      }
+
+      .portfolio-head {
+        align-items: center;
+      }
+
+      .portfolio-value {
+        font-size: 39px;
+      }
+
+      .cash-button {
+        padding: 9px 11px;
+      }
+
+      .chart-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .periods {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .period-btn {
+        flex: 1;
+      }
+
+      .chart-wrap,
+      .chart-wrap svg {
+        min-height: 240px;
+        height: 240px;
+      }
+
+      .chart-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .right-column {
+        grid-template-columns: 1fr;
+      }
+
+      .holdings-table {
+        min-width: 680px;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        z-index: 20;
+        left: 12px;
+        right: 12px;
+        bottom: 10px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 8px;
+        background: rgba(16, 34, 25, .95);
+        backdrop-filter: blur(14px);
+        border-radius: 18px;
+        box-shadow: 0 12px 32px rgba(16, 34, 25, .22);
+      }
+
+      .mobile-nav a {
+        text-decoration: none;
+        color: #b9c9c0;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 6px 4px;
+        border-radius: 10px;
+      }
+
+      .mobile-nav a.active {
+        color: #fff;
+        background: rgba(255,255,255,.08);
+      }
+
+      .mobile-nav b {
+        display: block;
+        font-size: 17px;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .portfolio-head {
+        gap: 8px;
+      }
+
+      .cash-button {
+        font-size: 12px;
+      }
+
+      .chart-summary {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <span>Mintly</span>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#" class="active"><span>Overview</span>◫</a>
+        <a href="#"><span>Portfolio</span>◩</a>
+        <a href="#"><span>Discover</span>⌁</a>
+        <a href="#"><span>Activity</span>↕</a>
+        <a href="#"><span>Settings</span>⚙</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <strong style="color:#fff;">Investing involves risk.</strong><br>
+        Values shown are fictional and for product demonstration only.
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Friday, Aug 28 · Market open</div>
+          <h1>Your portfolio</h1>
+        </div>
+
+        <div class="account-chip" aria-label="Account">
+          <div class="avatar">AM</div>
+          <div>
+            <strong>Alex Morgan</strong>
+            <span>Individual · USD</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="dashboard-grid">
+        <section class="stack">
+          <article class="card hero-card">
+            <div class="portfolio-head">
+              <div>
+                <div class="eyebrow">Total portfolio value</div>
+                <div class="portfolio-value">$128,460.24</div>
+                <div class="daily-return">▲ $1,284.61 · 1.01% <span>today</span></div>
+              </div>
+              <button class="cash-button">Add funds</button>
+            </div>
+
+            <div class="chart-toolbar">
+              <div>
+                <strong id="periodTitle">1 month performance</strong>
+                <div class="chart-caption" id="periodCaption">+$6,424.80 · +5.26% over this period</div>
+              </div>
+              <div class="periods" aria-label="Chart period">
+                <button class="period-btn" data-period="1D">1D</button>
+                <button class="period-btn" data-period="1W">1W</button>
+                <button class="period-btn active" data-period="1M">1M</button>
+                <button class="period-btn" data-period="1Y">1Y</button>
+                <button class="period-btn" data-period="ALL">All</button>
+              </div>
+            </div>
+
+            <div class="chart-wrap">
+              <svg viewBox="0 0 760 300" preserveAspectRatio="none" role="img" aria-label="Portfolio performance chart">
+                <defs>
+                  <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#20b46a" stop-opacity="0.22"></stop>
+                    <stop offset="100%" stop-color="#20b46a" stop-opacity="0"></stop>
+                  </linearGradient>
+                </defs>
+                <path id="areaPath" class="chart-area" d=""></path>
+                <polyline id="linePath" class="chart-line" points=""></polyline>
+                <circle id="latestDot" class="latest-dot" cx="0" cy="0" r="5"></circle>
+              </svg>
+            </div>
+
+            <div class="chart-summary">
+              <div>Period return<br><strong id="summaryReturn">+5.26%</strong></div>
+              <div>Benchmark · S&amp;P 500<br><strong id="summaryBenchmark">+3.84%</strong></div>
+              <div>Net contributions<br><strong id="summaryContribution">$1,500.00</strong></div>
+              <div>Portfolio high<br><strong id="summaryHigh">$129,022.73</strong></div>
+            </div>
+          </article>
+
+          <section class="stats-grid" aria-label="Key portfolio statistics">
+            <div class="stat">
+              <div class="stat-label">Buying power</div>
+              <div class="stat-value">$8,920.16</div>
+              <div class="stat-sub">6.9% of portfolio</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Total return</div>
+              <div class="stat-value positive">+$24,810</div>
+              <div class="stat-sub">+23.94% since inception</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Dividends YTD</div>
+              <div class="stat-value">$1,284.20</div>
+              <div class="stat-sub">Est. yield 1.8%</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Risk level</div>
+              <div class="stat-value">Moderate</div>
+              <div class="stat-sub">72% equities · 21% ETFs</div>
+            </div>
+          </section>
+
+          <article class="card section-card">
+            <div class="section-header">
+              <h2>Holdings</h2>
+              <a href="#">View all holdings</a>
+            </div>
+            <div class="table-scroll">
+              <table class="holdings-table">
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Price</th>
+                    <th>Today</th>
+                    <th>Market value</th>
+                    <th>Allocation</th>
+                    <th>Total return</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="asset">
+                        <div class="asset-icon">AAPL</div>
+                        <div><strong>Apple</strong><span>18.4 shares</span></div>
+                      </div>
+                    </td>
+                    <td>$214.38</td>
+                    <td class="positive">+1.24%</td>
+                    <td>$39,442.69</td>
+                    <td>30.7%</td>
+                    <td class="positive">+$8,124</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="asset">
+                        <div class="asset-icon">VOO</div>
+                        <div><strong>Vanguard S&amp;P 500 ETF</strong><span>45.2 shares</span></div>
+                      </div>
+                    </td>
+                    <td>$532.14</td>
+                    <td class="positive">+0.64%</td>
+                    <td>$24,052.73</td>
+                    <td>18.7%</td>
+                    <td class="positive">+$4,862</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="asset">
+                        <div class="asset-icon">MSFT</div>
+                        <div><strong>Microsoft</strong><span>42.0 shares</span></div>
+                      </div>
+                    </td>
+                    <td>$454.67</td>
+                    <td class="negative">−0.32%</td>
+                    <td>$19,096.14</td>
+                    <td>14.9%</td>
+                    <td class="positive">+$3,715</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="asset">
+                        <div class="asset-icon">NVDA</div>
+                        <div><strong>NVIDIA</strong><span>109.5 shares</span></div>
+                      </div>
+                    </td>
+                    <td>$136.42</td>
+                    <td class="positive">+2.88%</td>
+                    <td>$14,938.00</td>
+                    <td>11.6%</td>
+                    <td class="positive">+$5,922</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="asset">
+                        <div class="asset-icon">BND</div>
+                        <div><strong>Vanguard Total Bond ETF</strong><span>184.0 shares</span></div>
+                      </div>
+                    </td>
+                    <td>$73.68</td>
+                    <td class="positive">+0.11%</td>
+                    <td>$13,557.12</td>
+                    <td>10.6%</td>
+                    <td class="negative">−$214</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <aside class="stack right-column">
+          <article class="card section-card">
+            <div class="section-header">
+              <h2>Allocation</h2>
+              <a href="#">Rebalance</a>
+            </div>
+            <div class="allocation">
+              <div class="allocation-row">
+                <div class="allocation-name">US stocks</div>
+                <div class="allocation-value">61.8%</div>
+                <div class="bar"><span style="--w:61.8%"></span></div>
+              </div>
+              <div class="allocation-row">
+                <div class="allocation-name">ETFs</div>
+                <div class="allocation-value">21.4%</div>
+                <div class="bar"><span style="--w:21.4%"></span></div>
+              </div>
+              <div class="allocation-row">
+                <div class="allocation-name">Bonds</div>
+                <div class="allocation-value">9.9%</div>
+                <div class="bar"><span style="--w:9.9%"></span></div>
+              </div>
+              <div class="allocation-row">
+                <div class="allocation-name">Cash</div>
+                <div class="allocation-value">6.9%</div>
+                <div class="bar"><span style="--w:6.9%"></span></div>
+              </div>
+            </div>
+            <p class="insight"><strong>Portfolio note:</strong> Your top two holdings make up 49.4% of invested assets, which increases concentration risk.</p>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-header">
+              <h2>Recent activity</h2>
+              <a href="#">See history</a>
+            </div>
+            <div class="activity-list">
+              <div class="activity">
+                <div class="activity-icon">↓</div>
+                <div><strong>Dividend · VOO</strong><span>Aug 27 · Reinvested</span></div>
+                <div class="activity-amount positive">+$86.40<small>0.162 shares</small></div>
+              </div>
+              <div class="activity">
+                <div class="activity-icon">↗</div>
+                <div><strong>Bought NVDA</strong><span>Aug 25 · Market order</span></div>
+                <div class="activity-amount">−$1,502.31<small>11.1 shares</small></div>
+              </div>
+              <div class="activity">
+                <div class="activity-icon">＋</div>
+                <div><strong>Bank transfer</strong><span>Aug 22 · Completed</span></div>
+                <div class="activity-amount positive">+$1,500.00<small>Cash balance</small></div>
+              </div>
+              <div class="activity">
+                <div class="activity-icon">↗</div>
+                <div><strong>Bought VOO</strong><span>Aug 19 · Recurring</span></div>
+                <div class="activity-amount">−$530.72<small>1.0 share</small></div>
+              </div>
+            </div>
+          </article>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <a href="#" class="active"><b>◫</b>Home</a>
+    <a href="#"><b>◩</b>Portfolio</a>
+    <a href="#"><b>⌁</b>Discover</a>
+    <a href="#"><b>↕</b>Activity</a>
+  </nav>
+
+  <script>
+    const datasets = {
+      "1D": {
+        values: [127175, 127540, 127390, 127820, 127670, 128020, 127960, 128220, 128460],
+        title: "Today’s performance",
+        caption: "+$1,284.61 · +1.01% today",
+        ret: "+1.01%",
+        bench: "+0.72%",
+        contrib: "$0.00",
+        high: "$128,498.12"
+      },
+      "1W": {
+        values: [124900, 125420, 124980, 126030, 126540, 127210, 128460],
+        title: "1 week performance",
+        caption: "+$3,560.24 · +2.85% over this period",
+        ret: "+2.85%",
+        bench: "+1.92%",
+        contrib: "$1,500.00",
+        high: "$128,460.24"
+      },
+      "1M": {
+        values: [122035, 121860, 122900, 123420, 123120, 124250, 124860, 124490, 125330, 126180, 125760, 126640, 127020, 126720, 127640, 128460],
+        title: "1 month performance",
+        caption: "+$6,424.80 · +5.26% over this period",
+        ret: "+5.26%",
+        bench: "+3.84%",
+        contrib: "$1,500.00",
+        high: "$129,022.73"
+      },
+      "1Y": {
+        values: [102600, 104400, 101800, 107600, 109900, 108400, 112700, 116400, 114300, 119500, 121800, 124600, 128460],
+        title: "1 year performance",
+        caption: "+$25,860.24 · +25.21% over this period",
+        ret: "+25.21%",
+        bench: "+18.40%",
+        contrib: "$8,400.00",
+        high: "$129,022.73"
+      },
+      "ALL": {
+        values: [103650, 101900, 106200, 109400, 108100, 111500, 114900, 116300, 113700, 117900, 121100, 119600, 123700, 126800, 124900, 128460],
+        title: "All-time performance",
+        caption: "+$24,810.24 · +23.94% since inception",
+        ret: "+23.94%",
+        bench: "+17.66%",
+        contrib: "$18,250.00",
+        high: "$129,022.73"
+      }
+    };
+
+    const line = document.getElementById("linePath");
+    const area = document.getElementById("areaPath");
+    const dot = document.getElementById("latestDot");
+
+    function renderChart(period) {
+      const data = datasets[period];
+      const values = data.values;
+      const w = 760;
+      const h = 300;
+      const padX = 16;
+      const padY = 26;
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const spread = Math.max(max - min, 1);
+
+      const points = values.map((v, i) => {
+        const x = padX + (i / (values.length - 1)) * (w - padX * 2);
+        const y = padY + (1 - (v - min) / spread) * (h - padY * 2);
+        return [x, y];
+      });
+
+      line.setAttribute("points", points.map(p => p.join(",")).join(" "));
+      area.setAttribute("d", `M ${points[0][0]} ${h} L ${points.map(p => p.join(" ")).join(" L ")} L ${points.at(-1)[0]} ${h} Z`);
+      dot.setAttribute("cx", points.at(-1)[0]);
+      dot.setAttribute("cy", points.at(-1)[1]);
+
+      document.getElementById("periodTitle").textContent = data.title;
+      document.getElementById("periodCaption").textContent = data.caption;
+      document.getElementById("summaryReturn").textContent = data.ret;
+      document.getElementById("summaryBenchmark").textContent = data.bench;
+      document.getElementById("summaryContribution").textContent = data.contrib;
+      document.getElementById("summaryHigh").textContent = data.high;
+    }
+
+    document.querySelectorAll(".period-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".period-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderChart(btn.dataset.period);
+      });
+    });
+
+    renderChart("1M");
+  </script>
+</body>
+</html>
